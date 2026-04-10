@@ -344,7 +344,8 @@ function openModal(id){editId=id||null;manualQ=[];var isE=!!editId;
   sel.disabled=false;document.getElementById('fNewChk').checked=false;document.getElementById('fNewWrap').classList.remove('on');
   if(isE){var c=db.contacts.find(function(x){return x.id===id});if(c){sel.value=c.category;document.getElementById('fCo').value=c.company||'';document.getElementById('fNm').value=c.name||'';
     document.getElementById('fTi').value=c.title||'';document.getElementById('fTm').value=c.team||'';document.getElementById('fPh').value=c.phone||'';document.getElementById('fEm').value=c.email||'';document.getElementById('fNo').value=c.note||''}}
-  else{['fCo','fNm','fTi','fTm','fPh','fEm','fNo','fNewCat'].forEach(function(x){document.getElementById(x).value=''})}
+  else{['fCo','fNm','fTi','fTm','fPh','fEm','fNo','fNewCat'].forEach(function(x){document.getElementById(x).value=''});
+    if(curFilter!=='all')sel.value=curFilter}
   document.getElementById('subBtn').disabled=false;clearOCR();batchItems=[];document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';
   renderManualQ();document.getElementById('ov').classList.add('on')}
 function editContact(id){openModal(id)}
