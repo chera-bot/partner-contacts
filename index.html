@@ -219,8 +219,6 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div id="cpnList"></div>
 <div class="det-add"><div class="det-add-title">쿠폰 추가</div>
 <div class="det-add-row"><label>날짜</label><input type="date" id="cDate"></div>
-<div class="det-add-row"><label>종류</label><div class="presets" id="cPresets"></div>
-<div class="other-input" id="cOther"><input type="text" id="cOtherVal" placeholder="직접 입력"></div></div>
 <div class="det-add-row"><label>수량</label><div class="stepper"><button onclick="stepQty(-1)">-</button><span id="cQty">1</span><button onclick="stepQty(1)">+</button></div></div>
 <button class="btn btn-p btn-s" onclick="addCpn()" style="width:100%;justify-content:center;margin-top:8px">추가</button></div></div>
 </div></div>
@@ -233,8 +231,7 @@ var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
 var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
-var CPN_TYPES=['스타벅스','배민1만','배민2만','배민3만','기타'];
-var selMeet='',selCpn='',cpnQty=1;
+var selMeet='',cpnQty=1;
 
 // === Crypto ===
 function hex2buf(h){var b=new Uint8Array(h.length/2);for(var i=0;i<h.length;i+=2)b[i/2]=parseInt(h.substr(i,2),16);return b}
@@ -348,13 +345,11 @@ function openDet(id,tab){detContactId=id;var c=db.contacts.find(function(x){retu
   document.getElementById('detAvatar').textContent=c.name.charAt(0);
   document.getElementById('detName').textContent=c.name+' · '+c.company;
   document.getElementById('detSub').textContent=[c.title,c.team].filter(Boolean).join(' · ');
-  selMeet='';selCpn='';cpnQty=1;
+  selMeet='';cpnQty=1;
   document.getElementById('mDate').value=today();document.getElementById('cDate').value=today();
   document.getElementById('mMemo').value='';document.getElementById('cQty').textContent='1';
-  document.getElementById('mOther').classList.remove('on');document.getElementById('cOther').classList.remove('on');
-  if(document.getElementById('mOtherVal'))document.getElementById('mOtherVal').value='';
-  if(document.getElementById('cOtherVal'))document.getElementById('cOtherVal').value='';
-  detTab(tab||0);renderMeet();renderCpn();renderMeetPresets();renderCpnPresets();
+  document.getElementById('mOther').classList.remove('on');
+  detTab(tab||0);renderMeet();renderCpn();renderMeetPresets();
   document.getElementById('detOv').classList.add('on')}
 function closeDet(){document.getElementById('detOv').classList.remove('on');detContactId=null}
 function detTab(n){var tabs=document.querySelectorAll('.det-tab');tabs.forEach(function(t,i){t.classList.toggle('on',i===n)});
@@ -383,9 +378,6 @@ async function delMeet(i){var c=db.contacts.find(function(x){return x.id===detCo
   renderMeet();render();try{await saveData('Del meeting: '+c.name)}catch(e){toast('저장 실패','er')}}
 
 // Coupon
-function renderCpnPresets(){document.getElementById('cPresets').innerHTML=CPN_TYPES.map(function(t){
-  return'<button class="preset'+(selCpn===t?' on':'')+'" onclick="pickCpn(\''+t+'\')">'+t+'</button>'}).join('')}
-function pickCpn(t){selCpn=t;renderCpnPresets();document.getElementById('cOther').classList.toggle('on',t==='기타')}
 function stepQty(d){cpnQty=Math.max(1,cpnQty+d);document.getElementById('cQty').textContent=cpnQty}
 function renderCpn(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
   var el=document.getElementById('cpnList');if(!c.coupons||!c.coupons.length){el.innerHTML='<div class="det-empty">쿠폰 이력이 없습니다</div>';return}
@@ -393,13 +385,11 @@ function renderCpn(){var c=db.contacts.find(function(x){return x.id===detContact
   var total=sorted.reduce(function(s,x){return s+(x.qty||1)},0);
   el.innerHTML='<div style="font-size:13px;color:var(--g500);margin-bottom:10px">총 '+total+'회 지급</div>'
     +sorted.map(function(cp,i){return'<div class="det-item"><div class="det-item-main"><div class="det-item-date">'+cp.date+'</div>'
-    +'<div class="det-item-type">'+esc(cp.type)+(cp.qty>1?' x'+cp.qty:'')+'</div>'
+    +'<div class="det-item-type">쏘카쿠폰 '+(cp.qty||1)+'매</div>'
     +'</div><button class="det-item-del" onclick="delCpn('+i+')">&times;</button></div>'}).join('')}
 async function addCpn(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
-  var type=selCpn==='기타'?document.getElementById('cOtherVal').value.trim():selCpn;
-  if(!type){toast('종류를 선택하세요','er');return}
-  c.coupons.push({date:document.getElementById('cDate').value,type:type,qty:cpnQty});
-  renderCpn();render();selCpn='';cpnQty=1;document.getElementById('cQty').textContent='1';renderCpnPresets();document.getElementById('cOther').classList.remove('on');
+  c.coupons.push({date:document.getElementById('cDate').value,qty:cpnQty});
+  renderCpn();render();cpnQty=1;document.getElementById('cQty').textContent='1';
   try{await saveData('Coupon: '+c.name)}catch(e){toast('저장 실패','er')}}
 async function delCpn(i){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
   var sorted=c.coupons.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
