@@ -196,7 +196,14 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="row2"><div class="fg"><label>연락처 (M)</label><input type="tel" id="fPh" placeholder="010-0000-0000"></div>
 <div class="fg"><label>연락처 (E)</label><input type="email" id="fEm" placeholder="email@company.com"></div></div>
 <div class="fg"><label>비고</label><input type="text" id="fNo" placeholder="메모"></div>
-<div class="modal-btns"><button class="btn btn-o" onclick="closeModal()">취소</button><button class="btn btn-p" id="subBtn" onclick="submit()">등록</button></div>
+<div id="manualQueue" style="display:none;margin-bottom:14px">
+<div style="font-size:12px;font-weight:600;color:var(--g600);margin-bottom:6px" id="mqLabel">대기 중 0명</div>
+<div id="mqList" style="max-height:120px;overflow-y:auto"></div></div>
+<div class="modal-btns" style="flex-wrap:wrap">
+<button class="btn btn-o" onclick="closeModal()" style="flex:1">취소</button>
+<button class="btn btn-o" id="addMoreBtn" onclick="addToQueue()" style="flex:1;border-color:var(--p);color:var(--p)">+ 한 명 더</button>
+<button class="btn btn-p" id="subBtn" onclick="submit()" style="flex:1">등록</button>
+</div>
 </div></div></div></div>
 
 <!-- DETAIL PANEL -->
@@ -311,34 +318,60 @@ async function deleteSelected(){var ids=Object.keys(selected);if(!ids.length||!c
   updateDelBar();renderStats();render();loading(false)}
 
 // === Add/Edit Modal ===
-function openModal(id){editId=id||null;var isE=!!editId;
+var manualQ=[];
+function openModal(id){editId=id||null;manualQ=[];var isE=!!editId;
   document.getElementById('modalTitle').textContent=isE?'연락처 수정':'신규 연락처 등록';
   document.getElementById('subBtn').textContent=isE?'저장':'등록';
+  document.getElementById('addMoreBtn').style.display=isE?'none':'';
   var sel=document.getElementById('fCat');sel.innerHTML=db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
   sel.disabled=false;document.getElementById('fNewChk').checked=false;document.getElementById('fNewWrap').classList.remove('on');
   if(isE){var c=db.contacts.find(function(x){return x.id===id});if(c){sel.value=c.category;document.getElementById('fCo').value=c.company||'';document.getElementById('fNm').value=c.name||'';
     document.getElementById('fTi').value=c.title||'';document.getElementById('fTm').value=c.team||'';document.getElementById('fPh').value=c.phone||'';document.getElementById('fEm').value=c.email||'';document.getElementById('fNo').value=c.note||''}}
   else{['fCo','fNm','fTi','fTm','fPh','fEm','fNo','fNewCat'].forEach(function(x){document.getElementById(x).value=''})}
   document.getElementById('subBtn').disabled=false;clearOCR();batchItems=[];document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';
-  document.getElementById('ov').classList.add('on')}
+  renderManualQ();document.getElementById('ov').classList.add('on')}
 function editContact(id){openModal(id)}
-function closeModal(){document.getElementById('ov').classList.remove('on');editId=null}
+function closeModal(){document.getElementById('ov').classList.remove('on');editId=null;manualQ=[]}
 function toggleNew(){var on=document.getElementById('fNewChk').checked;document.getElementById('fNewWrap').classList.toggle('on',on);document.getElementById('fCat').disabled=on}
-async function submit(){var isNew=document.getElementById('fNewChk').checked;
-  var co=document.getElementById('fCo').value.trim(),nm=document.getElementById('fNm').value.trim();
-  if(!co||!nm){toast('기업명과 성함은 필수입니다','er');return}
+function getFormData(){var isNew=document.getElementById('fNewChk').checked;
   var cat=isNew?document.getElementById('fNewCat').value.trim():document.getElementById('fCat').value;
-  if(isNew&&!cat){toast('새 구분 이름을 입력하세요','er');return}
-  var btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent=editId?'저장 중...':'등록 중...';
-  if(isNew&&db.categories.indexOf(cat)<0)db.categories.push(cat);
-  var f={category:cat,company:co,name:nm,title:document.getElementById('fTi').value.trim(),team:document.getElementById('fTm').value.trim(),
-    phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),note:document.getElementById('fNo').value.trim()};
-  if(editId){var c=db.contacts.find(function(x){return x.id===editId});if(c)Object.assign(c,f);
-    try{var r=await saveData('Edit: '+nm);if(r.content){toast(nm+' 수정 완료','ok');closeModal();renderStats();render()}
+  return{category:cat,company:document.getElementById('fCo').value.trim(),name:document.getElementById('fNm').value.trim(),
+    title:document.getElementById('fTi').value.trim(),team:document.getElementById('fTm').value.trim(),
+    phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),note:document.getElementById('fNo').value.trim(),isNewCat:isNew}}
+function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
+  if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
+  manualQ.push(d);renderManualQ();
+  ['fCo','fNm','fTi','fTm','fPh','fEm','fNo'].forEach(function(x){document.getElementById(x).value=''});
+  toast(d.name+' 추가됨 ('+manualQ.length+'명 대기 중)','ok')}
+function removeFromQ(i){manualQ.splice(i,1);renderManualQ()}
+function renderManualQ(){var wrap=document.getElementById('manualQueue');var list=document.getElementById('mqList');
+  if(!manualQ.length){wrap.style.display='none';document.getElementById('subBtn').textContent=editId?'저장':'등록';return}
+  wrap.style.display='block';document.getElementById('mqLabel').textContent='대기 중 '+manualQ.length+'명';
+  document.getElementById('subBtn').textContent='전체 등록 ('+(manualQ.length)+'+1)';
+  list.innerHTML=manualQ.map(function(c,i){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--g50);border-radius:6px;margin-bottom:4px;font-size:13px">'
+    +'<span><b>'+esc(c.name)+'</b> · '+esc(c.company)+' · <span class="badge b-'+c.category.replace('/','\\/')+'">'+esc(c.category)+'</span></span>'
+    +'<button onclick="removeFromQ('+i+')" style="border:none;background:none;cursor:pointer;color:var(--g400);font-size:14px">&times;</button></div>'}).join('')}
+async function submit(){var d=getFormData();var isNew=d.isNewCat;
+  // If editing
+  if(editId){if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
+    var btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='저장 중...';
+    if(isNew&&d.category&&db.categories.indexOf(d.category)<0)db.categories.push(d.category);
+    var c=db.contacts.find(function(x){return x.id===editId});if(c)Object.assign(c,{category:d.category,company:d.company,name:d.name,title:d.title,team:d.team,phone:d.phone,email:d.email,note:d.note});
+    try{var r=await saveData('Edit: '+d.name);if(r.content){toast(d.name+' 수정 완료','ok');closeModal();renderStats();render()}
     else{toast('저장 실패','er');btn.disabled=false;btn.textContent='저장'}}catch(e){toast('오류','er');btn.disabled=false;btn.textContent='저장'}
-  }else{var c=Object.assign({id:'c'+Date.now(),meetings:[],coupons:[]},f);db.contacts.push(c);
-    try{var r=await saveData('Add: '+nm+' ('+cat+')');if(r.content){toast(nm+' 등록 완료','ok');closeModal();renderStats();render()}
-    else{db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='등록'}}catch(e){db.contacts.pop();toast('오류','er');btn.disabled=false;btn.textContent='등록'}}}
+    return}
+  // Collect all: queue + current form (if filled)
+  var all=manualQ.slice();
+  if(d.company&&d.name)all.push(d);
+  if(!all.length){toast('기업명과 성함은 필수입니다','er');return}
+  var btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='등록 중...';
+  all.forEach(function(item){
+    if(item.isNewCat&&item.category&&db.categories.indexOf(item.category)<0)db.categories.push(item.category);
+    db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:item.category,company:item.company,name:item.name,
+      title:item.title||'',team:item.team||'',phone:item.phone||'',email:item.email||'',note:item.note||'',meetings:[],coupons:[]})});
+  try{var r=await saveData('Add '+all.length+' contacts');if(r.content){toast(all.length+'명 등록 완료','ok');closeModal();renderStats();render()}
+  else{for(var i=0;i<all.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='등록'}}
+  catch(e){for(var i=0;i<all.length;i++)db.contacts.pop();toast('오류','er');btn.disabled=false;btn.textContent='등록'}}
 
 // === Detail Panel ===
 function openDet(id,tab){detContactId=id;var c=db.contacts.find(function(x){return x.id===id});if(!c)return;
