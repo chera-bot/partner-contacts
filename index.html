@@ -46,7 +46,7 @@ tbody td{padding:12px 14px;font-size:14px;border-bottom:1px solid var(--g100);ve
 tbody tr:hover{background:#f8faff}tbody tr.selected{background:#eff6ff}
 .badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600}
 .b-IR{background:#dbeafe;color:#1d4ed8}.b-CorpDev{background:#fef3c7;color:#92400e}.b-Invest{background:#d1fae5;color:#065f46}
-.b-Mobility{background:#ede9fe;color:#5b21b6}.b-PG\/Payment{background:#fce7f3;color:#9d174d}.b-Insurance{background:#fed7aa;color:#9a3412}
+.b-Mobility{background:#ede9fe;color:#5b21b6}.b-PGPayment{background:#fce7f3;color:#9d174d}.b-Insurance{background:#fed7aa;color:#9a3412}
 .badge:not([class*="b-"]){background:var(--g100);color:var(--g600)}
 .mono{font-family:"SF Mono",Consolas,monospace;font-size:13px;color:var(--g600)}
 .empty{text-align:center;padding:50px 20px;color:var(--g400)}.empty p{font-size:15px;margin-top:12px}
@@ -311,7 +311,7 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
     var lastMeet=c.meetings&&c.meetings.length?c.meetings.sort(function(a,b){return b.date.localeCompare(a.date)})[0]:null;
     var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
     return '<tr class="'+sel+'"><td class="td-chk"><input type="checkbox"'+chk+' onchange="toggleSel(\''+c.id+'\')"></td>'
-      +'<td><span class="badge b-'+c.category.replace('/','\\/')+'">'+esc(c.category)+'</span></td>'
+      +'<td><span class="badge b-'+c.category.replace(/\//g,'')+'">'+esc(c.category)+'</span></td>'
       +'<td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
       +'<td class="mono">'+(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="color:var(--g600);text-decoration:none">'+esc(c.phone)+'</a>':'')+'</td>'
       +'<td class="mono">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--g600);text-decoration:none">'+esc(c.email)+'</a>':'')+'</td>'
@@ -366,8 +366,8 @@ function liveDupCheck(){
     return(coMatch&&nmMatch)||(nmMatch&&phMatch)||(coMatch&&phMatch)});
   if(!matches.length){warn.style.display='none';return}
   var exact=matches.find(function(c){return c.company===co&&c.name===nm&&ph&&c.phone===ph});
-  if(exact){warn.innerHTML='<b>중복 주의!</b> '+esc(co)+' '+esc(nm)+' ('+esc(ph)+') 이미 등록되어 있습니다.';warn.style.display='block';return}
-  warn.innerHTML='<b>유사 연락처 발견:</b> '+matches.map(function(c){return esc(c.company)+' '+esc(c.name)+(c.phone?' ('+esc(c.phone)+')':'')}).join(', ');
+  if(exact){warn.innerHTML='<b>중복 주의!</b> '+esc(co)+' '+esc(nm)+' ('+fmtPhone(ph)+') 이미 등록되어 있습니다.';warn.style.display='block';return}
+  warn.innerHTML='<b>유사 연락처 발견:</b> '+matches.map(function(c){return esc(c.company)+' '+esc(c.name)+(c.phone?' ('+fmtPhone(c.phone)+')':'')}).join(', ');
   warn.style.display='block'}
 function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
   if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
@@ -381,7 +381,7 @@ function renderManualQ(){var wrap=document.getElementById('manualQueue');var lis
   wrap.style.display='block';document.getElementById('mqLabel').textContent='대기 중 '+manualQ.length+'명';
   document.getElementById('subBtn').textContent='전체 등록 ('+(manualQ.length)+'+1)';
   list.innerHTML=manualQ.map(function(c,i){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--g50);border-radius:6px;margin-bottom:4px;font-size:13px">'
-    +'<span><b>'+esc(c.name)+'</b> · '+esc(c.company)+' · <span class="badge b-'+c.category.replace('/','\\/')+'">'+esc(c.category)+'</span></span>'
+    +'<span><b>'+esc(c.name)+'</b> · '+esc(c.company)+' · <span class="badge b-'+c.category.replace(/\//g,'')+'">'+esc(c.category)+'</span></span>'
     +'<button onclick="removeFromQ('+i+')" style="border:none;background:none;cursor:pointer;color:var(--g400);font-size:14px">&times;</button></div>'}).join('')}
 async function submit(){var d=getFormData();var isNew=d.isNewCat;
   // If editing
@@ -476,6 +476,7 @@ async function delCpn(i){var c=db.contacts.find(function(x){return x.id===detCon
 function loading(on){document.getElementById('loader').classList.toggle('on',on)}
 function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+t+' on';setTimeout(function(){el.classList.remove('on')},3000)}
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function fmtPhone(p){if(!p)return'';var n=p.replace(/[^0-9]/g,'');if(n.length===11)return n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7);if(n.length===10)return n.slice(0,3)+'-'+n.slice(3,6)+'-'+n.slice(6);return p}
 
 // === OCR ===
 var batchItems=[];
