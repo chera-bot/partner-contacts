@@ -360,12 +360,23 @@ function today(){return new Date().toISOString().slice(0,10)}
 function renderMeetPresets(){document.getElementById('mPresets').innerHTML=MEET_TYPES.map(function(t){
   return'<button class="preset'+(selMeet===t?' on':'')+'" onclick="pickMeet(\''+t+'\')">'+t+'</button>'}).join('')}
 function pickMeet(t){selMeet=t;renderMeetPresets();document.getElementById('mOther').classList.toggle('on',t==='기타')}
+var editMeetIdx=-1;
 function renderMeet(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
   var el=document.getElementById('meetList');if(!c.meetings||!c.meetings.length){el.innerHTML='<div class="det-empty">미팅 이력이 없습니다</div>';return}
   var sorted=c.meetings.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
-  el.innerHTML=sorted.map(function(m,i){return'<div class="det-item"><div class="det-item-main"><div class="det-item-date">'+m.date+'</div>'
+  el.innerHTML=sorted.map(function(m,i){
+    if(editMeetIdx===i)return'<div class="det-item" style="flex-direction:column;gap:8px">'
+      +'<div style="display:flex;gap:8px;width:100%"><input type="date" id="emDate" value="'+m.date+'" style="flex:1;padding:6px 8px;border:1px solid var(--g200);border-radius:6px;font-size:13px">'
+      +'<input type="text" id="emType" value="'+esc(m.type)+'" placeholder="유형" style="flex:1;padding:6px 8px;border:1px solid var(--g200);border-radius:6px;font-size:13px"></div>'
+      +'<input type="text" id="emMemo" value="'+esc(m.memo||'')+'" placeholder="메모 (선택)" style="width:100%;padding:6px 8px;border:1px solid var(--g200);border-radius:6px;font-size:13px">'
+      +'<div style="display:flex;gap:6px"><button class="btn btn-p btn-s" onclick="saveMeetEdit('+i+')">저장</button><button class="btn btn-o btn-s" onclick="editMeetIdx=-1;renderMeet()">취소</button></div></div>';
+    return'<div class="det-item"><div class="det-item-main" onclick="editMeetIdx='+i+';renderMeet()" style="cursor:pointer"><div class="det-item-date">'+m.date+'</div>'
     +'<div class="det-item-type">'+esc(m.type)+'</div>'+(m.memo?'<div class="det-item-memo">'+esc(m.memo)+'</div>':'')
-    +'</div><button class="det-item-del" onclick="delMeet('+i+')">&times;</button></div>'}).join('')}
+    +'</div><button class="det-item-del" onclick="event.stopPropagation();delMeet('+i+')">&times;</button></div>'}).join('')}
+async function saveMeetEdit(i){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
+  var sorted=c.meetings.slice().sort(function(a,b){return b.date.localeCompare(a.date)});var m=sorted[i];
+  m.date=document.getElementById('emDate').value;m.type=document.getElementById('emType').value.trim();m.memo=document.getElementById('emMemo').value.trim();
+  editMeetIdx=-1;renderMeet();render();try{await saveData('Edit meeting: '+c.name)}catch(e){toast('저장 실패','er')}}
 async function addMeet(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
   var type=selMeet==='기타'?document.getElementById('mOtherVal').value.trim():selMeet;
   if(!type){toast('유형을 선택하세요','er');return}
