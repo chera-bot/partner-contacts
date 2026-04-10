@@ -113,6 +113,24 @@ th.th-act,td.td-act{width:50px;text-align:center}
 .ocr-progress .ocr-fill{height:100%;background:var(--p);border-radius:3px;transition:width .3s;width:0}
 .ocr-progress p{font-size:13px;color:var(--g600);font-weight:500}
 
+/* Batch OCR */
+.batch-wrap{display:none;max-height:55vh;overflow-y:auto;margin-bottom:14px}
+.batch-wrap.on{display:block}
+.batch-card{border:1px solid var(--g200);border-radius:var(--rs);padding:14px;margin-bottom:10px;position:relative;background:#fff}
+.batch-card:hover{border-color:var(--p)}
+.batch-card .bc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.batch-card .bc-num{font-size:12px;font-weight:600;color:var(--p);background:var(--pl);padding:2px 8px;border-radius:6px}
+.batch-card .bc-del{width:24px;height:24px;border:none;background:var(--g100);border-radius:6px;cursor:pointer;font-size:14px;color:var(--g500);display:flex;align-items:center;justify-content:center}
+.batch-card .bc-del:hover{background:#fee2e2;color:var(--d)}
+.batch-card .bc-row{display:flex;gap:8px;margin-bottom:6px}
+.batch-card .bc-row input{flex:1;padding:6px 8px;border:1px solid var(--g200);border-radius:6px;font-size:13px;outline:none}
+.batch-card .bc-row input:focus{border-color:var(--p)}
+.batch-card .bc-row input::placeholder{color:var(--g400)}
+.batch-cat{margin-bottom:14px}
+.batch-cat label{font-size:12px;font-weight:600;color:var(--g600);margin-bottom:4px;display:block}
+.batch-cat select{width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:14px;outline:none}
+.batch-info{font-size:12px;color:var(--g500);margin-bottom:12px}
+
 /* Toast & Loader */
 .toast{position:fixed;bottom:20px;right:20px;padding:12px 22px;border-radius:var(--rs);font-size:14px;font-weight:500;z-index:200;transform:translateY(80px);opacity:0;transition:all .3s;box-shadow:0 6px 20px rgba(0,0,0,.12)}
 .toast.on{transform:translateY(0);opacity:1}.toast.ok{background:var(--s);color:#fff}.toast.er{background:var(--d);color:#fff}
@@ -181,9 +199,16 @@ th.th-act,td.td-act{width:50px;text-align:center}
 <div class="ocr-title">명함 촬영 / 업로드</div>
 <p>명함 사진을 찍거나 선택하면 자동으로 인식합니다</p>
 </div>
-<input type="file" id="ocrFile" accept="image/*" capture="environment" style="display:none" onchange="handleOCR(this)">
+<input type="file" id="ocrFile" accept="image/*" capture="environment" multiple style="display:none" onchange="handleOCR(this)">
 <div class="ocr-preview" id="ocrPreview"><img id="ocrImg"><button class="ocr-remove" onclick="clearOCR()">&times;</button></div>
 <div class="ocr-progress" id="ocrProg"><p id="ocrStatus">명함 인식 중...</p><div class="ocr-bar"><div class="ocr-fill" id="ocrFill"></div></div></div>
+<div class="batch-wrap" id="batchWrap">
+<div class="batch-info" id="batchInfo"></div>
+<div class="batch-cat"><label>구분 (전체 적용) <span class="req">*</span></label><select id="bCat"></select></div>
+<div id="batchList"></div>
+<div class="modal-btns"><button class="btn btn-o" onclick="closeBatch()">취소</button><button class="btn btn-p" id="batchSubBtn" onclick="submitBatch()">전체 등록</button></div>
+</div>
+<div id="singleForm">
 <div class="fg"><label>구분 <span class="req">*</span></label><select id="fCat"></select>
 <div class="chk"><input type="checkbox" id="fNewChk" onchange="toggleNew()"><label for="fNewChk">새 구분 추가</label></div>
 <div class="newcat" id="fNewWrap"><input type="text" id="fNewCat" placeholder="새 구분 이름 (예: Legal)"></div></div>
@@ -195,6 +220,7 @@ th.th-act,td.td-act{width:50px;text-align:center}
 <div class="fg"><label>연락처 (E)</label><input type="email" id="fEm" placeholder="email@company.com"></div></div>
 <div class="fg"><label>비고</label><input type="text" id="fNo" placeholder="메모"></div>
 <div class="modal-btns"><button class="btn btn-o" onclick="closeModal()">취소</button><button class="btn btn-p" id="subBtn" onclick="submit()">등록</button></div>
+</div><!-- /singleForm -->
 </div></div></div>
 
 <div class="loader" id="loader"><div class="spin"></div></div>
@@ -368,6 +394,7 @@ function openModal(id){
     ['fCo','fNm','fTi','fTm','fPh','fEm','fNo','fNewCat'].forEach(function(x){document.getElementById(x).value=''});
   }
   document.getElementById('subBtn').disabled=false;clearOCR();
+  batchItems=[];document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';
   document.getElementById('ov').classList.add('on');
 }
 function editContact(id){openModal(id)}
@@ -412,12 +439,68 @@ function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 // === OCR ===
+var batchItems=[];
 function handleOCR(input){
-  if(!input.files||!input.files[0])return;
+  if(!input.files||!input.files.length)return;
+  if(input.files.length>1){handleBatchOCR(input.files);return}
   var reader=new FileReader();
   reader.onload=function(e){document.getElementById('ocrImg').src=e.target.result;
     document.getElementById('ocrPreview').classList.add('on');document.getElementById('ocrBox').style.display='none';runOCR(e.target.result);};
   reader.readAsDataURL(input.files[0]);
+}
+async function handleBatchOCR(files){
+  document.getElementById('ocrBox').style.display='none';
+  document.getElementById('singleForm').style.display='none';
+  var prog=document.getElementById('ocrProg'),fill=document.getElementById('ocrFill'),status=document.getElementById('ocrStatus');
+  prog.classList.add('on');
+  if(!window.Tesseract){fill.style.width='5%';status.textContent='OCR 엔진 로딩 중...';
+    await new Promise(function(ok){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=ok;document.head.appendChild(s)})}
+  batchItems=[];
+  for(var i=0;i<files.length;i++){
+    var pct=Math.round((i/files.length)*100);
+    fill.style.width=pct+'%';status.textContent=(i+1)+'/'+files.length+' 인식 중...';
+    var src=await readFile(files[i]);
+    var processed=await preprocessImage(src);
+    try{var r=await Tesseract.recognize(processed,'kor+eng');batchItems.push(parseCard(r.data.text))}
+    catch(e){batchItems.push({company:'',name:'',title:'',team:'',phone:'',email:''})}
+  }
+  fill.style.width='100%';status.textContent=files.length+'장 인식 완료!';
+  setTimeout(function(){prog.classList.remove('on');showBatch()},800);
+}
+function readFile(f){return new Promise(function(ok){var r=new FileReader();r.onload=function(e){ok(e.target.result)};r.readAsDataURL(f)})}
+function showBatch(){
+  var wrap=document.getElementById('batchWrap');wrap.classList.add('on');
+  document.getElementById('batchInfo').textContent=batchItems.length+'개 명함 인식 결과 - 내용을 확인/수정 후 등록하세요';
+  var sel=document.getElementById('bCat');
+  sel.innerHTML=db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
+  renderBatch();
+}
+function renderBatch(){
+  var list=document.getElementById('batchList');
+  list.innerHTML=batchItems.map(function(c,i){
+    return '<div class="batch-card"><div class="bc-head"><span class="bc-num">#'+(i+1)+'</span><button class="bc-del" onclick="removeBatch('+i+')">&times;</button></div>'
+      +'<div class="bc-row"><input placeholder="기업" value="'+esc(c.company)+'" onchange="batchItems['+i+'].company=this.value"><input placeholder="성함" value="'+esc(c.name)+'" onchange="batchItems['+i+'].name=this.value"></div>'
+      +'<div class="bc-row"><input placeholder="직책" value="'+esc(c.title)+'" onchange="batchItems['+i+'].title=this.value"><input placeholder="조직/팀" value="'+esc(c.team)+'" onchange="batchItems['+i+'].team=this.value"></div>'
+      +'<div class="bc-row"><input placeholder="연락처(M)" value="'+esc(c.phone)+'" onchange="batchItems['+i+'].phone=this.value"><input placeholder="이메일" value="'+esc(c.email)+'" onchange="batchItems['+i+'].email=this.value"></div></div>';
+  }).join('');
+}
+function removeBatch(i){batchItems.splice(i,1);if(!batchItems.length){closeBatch();return}
+  document.getElementById('batchInfo').textContent=batchItems.length+'개 명함';renderBatch()}
+function closeBatch(){batchItems=[];document.getElementById('batchWrap').classList.remove('on');
+  document.getElementById('singleForm').style.display='';document.getElementById('ocrBox').style.display='';closeModal()}
+async function submitBatch(){
+  var cat=document.getElementById('bCat').value;
+  var valid=batchItems.filter(function(c){return c.company&&c.name});
+  if(!valid.length){toast('기업명과 성함이 입력된 항목이 없습니다','er');return}
+  var btn=document.getElementById('batchSubBtn');btn.disabled=true;btn.textContent='등록 중...';
+  valid.forEach(function(c){db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:cat,company:c.company,name:c.name,
+    title:c.title||'',team:c.team||'',phone:c.phone||'',email:c.email||'',note:'',coupon:false})});
+  try{var res=await saveData('Batch add '+valid.length+' contacts');
+    if(res.content){toast(valid.length+'개 연락처 등록 완료','ok');batchItems=[];
+      document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';
+      document.getElementById('ocrBox').style.display='';closeModal();renderStats();render()}
+    else{for(var i=0;i<valid.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='전체 등록'}
+  }catch(e){for(var i=0;i<valid.length;i++)db.contacts.pop();toast('오류 발생','er');btn.disabled=false;btn.textContent='전체 등록'}
 }
 function clearOCR(){document.getElementById('ocrPreview').classList.remove('on');document.getElementById('ocrProg').classList.remove('on');
   document.getElementById('ocrBox').style.display='';document.getElementById('ocrFile').value=''}
