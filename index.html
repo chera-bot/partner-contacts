@@ -165,6 +165,11 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="stats" id="stats"></div>
 <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 <input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="render()"></div>
+<div id="filterBar" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+<select id="fltCompany" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
+<select id="fltCoupon" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
+<button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
+</div>
 <div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
 <div class="tbl-wrap"><table><thead><tr>
 <th class="th-chk"><input type="checkbox" id="chkAll" onchange="toggleAll()"></th>
@@ -275,7 +280,7 @@ async function ghPut(p,c,sha,m){var b={message:m,content:btoa(unescape(encodeURI
 async function loadData(){loading(true);try{var r=await ghGet(FILE);fileSha=r.sha;
   db=JSON.parse(await decryptData(decodeURIComponent(escape(atob(r.content.replace(/\n/g,''))))));
   db.contacts.forEach(function(c){if(!c.meetings)c.meetings=[];if(!c.coupons)c.coupons=[]});
-  }catch(e){toast('데이터 로드 실패','er')}selected={};updateDelBar();renderStats();render();loading(false)}
+  }catch(e){toast('데이터 로드 실패','er')}selected={};updateDelBar();renderStats();updateFilterOptions();render();loading(false)}
 async function saveData(m){var enc=await encryptData(JSON.stringify(db,null,2));var r=await ghPut(FILE,enc,fileSha,m||'Update');if(r.content)fileSha=r.content.sha;return r}
 async function refresh(){await loadData();toast('새로고침 완료','ok')}
 
@@ -285,8 +290,18 @@ function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contac
   var h='<div class="stat total'+(curFilter==='all'?' on':'')+'" onclick="setF(\'all\')"><div class="stat-label">전체</div><div class="stat-num">'+t+'</div></div>';
   db.categories.forEach(function(c){h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
   el.innerHTML=h}
+function updateFilterOptions(){
+  var companies={};db.contacts.forEach(function(c){if(c.company)companies[c.company]=true});
+  var sel=document.getElementById('fltCompany');var cur=sel.value;
+  sel.innerHTML='<option value="">기업: 전체</option>'+Object.keys(companies).sort().map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
+  sel.value=cur}
+function clearFilters(){document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';render()}
 function render(){var tb=document.getElementById('tbody'),q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
+  var fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value;
   if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
+  if(fCo)list=list.filter(function(c){return c.company===fCo});
+  if(fCpn==='Y')list=list.filter(function(c){return c.coupons&&c.coupons.length>0});
+  if(fCpn==='N')list=list.filter(function(c){return!c.coupons||!c.coupons.length});
   if(q)list=list.filter(function(c){return[c.company,c.name,c.phone,c.email,c.team,c.title].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})});
   if(!list.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';return}
   tb.innerHTML=list.map(function(c){
@@ -338,8 +353,10 @@ function getFormData(){var isNew=document.getElementById('fNewChk').checked;
   return{category:cat,company:document.getElementById('fCo').value.trim(),name:document.getElementById('fNm').value.trim(),
     title:document.getElementById('fTi').value.trim(),team:document.getElementById('fTm').value.trim(),
     phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),note:document.getElementById('fNo').value.trim(),isNewCat:isNew}}
+function checkDup(d){return db.contacts.find(function(c){return c.company===d.company&&c.name===d.name&&d.phone&&c.phone===d.phone})}
 function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
   if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
+  var dup=checkDup(d);if(dup&&!confirm(d.company+' '+d.name+' ('+d.phone+') 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;
   manualQ.push(d);renderManualQ();
   ['fCo','fNm','fTi','fTm','fPh','fEm','fNo'].forEach(function(x){document.getElementById(x).value=''});
   toast(d.name+' 추가됨 ('+manualQ.length+'명 대기 중)','ok')}
@@ -362,7 +379,7 @@ async function submit(){var d=getFormData();var isNew=d.isNewCat;
     return}
   // Collect all: queue + current form (if filled)
   var all=manualQ.slice();
-  if(d.company&&d.name)all.push(d);
+  if(d.company&&d.name){var dup=checkDup(d);if(dup&&!confirm(d.company+' '+d.name+' ('+d.phone+') 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;all.push(d)}
   if(!all.length){toast('기업명과 성함은 필수입니다','er');return}
   var btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='등록 중...';
   all.forEach(function(item){
