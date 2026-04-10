@@ -367,8 +367,8 @@ function liveDupCheck(){
     return(coMatch&&nmMatch)||(nmMatch&&phMatch)||(coMatch&&phMatch)});
   if(!matches.length){warn.style.display='none';return}
   var exact=matches.find(function(c){return c.company===co&&c.name===nm&&ph&&c.phone===ph});
-  if(exact){warn.innerHTML='<b>중복 주의!</b> '+esc(co)+' '+esc(nm)+' ('+fmtPhone(ph)+') 이미 등록되어 있습니다.';warn.style.display='block';return}
-  warn.innerHTML='<b>유사 연락처 발견:</b> '+matches.map(function(c){return esc(c.company)+' '+esc(c.name)+(c.phone?' ('+fmtPhone(c.phone)+')':'')}).join(', ');
+  if(exact){warn.innerHTML='<b>중복 주의!</b> '+esc(co)+' '+esc(nm)+' / '+fmtPhone(ph)+(exact.email?' / '+esc(exact.email):'')+' 이미 등록되어 있습니다.';warn.style.display='block';return}
+  warn.innerHTML='<b>유사 연락처 발견:</b><br>'+matches.map(function(c){return esc(c.company)+' '+esc(c.name)+(c.phone?' / '+fmtPhone(c.phone):'')+(c.email?' / '+esc(c.email):'')}).join('<br>');
   warn.style.display='block'}
 function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
   if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
