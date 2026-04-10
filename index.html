@@ -333,7 +333,7 @@ function render(){
     return '<tr class="'+sel+'"><td class="td-chk"><input type="checkbox"'+chk+' onchange="toggleSel(\''+c.id+'\')"></td>'
       +'<td><span class="badge b-'+c.category.replace('/','\\/')+'">'+esc(c.category)+'</span></td>'
       +'<td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
-      +'<td class="mono">'+esc(c.phone)+'</td><td class="mono">'+esc(c.email)+'</td>'
+      +'<td class="mono">'+(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="color:var(--g600);text-decoration:none">'+esc(c.phone)+'</a>':'')+' </td><td class="mono">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--g600);text-decoration:none">'+esc(c.email)+'</a>':'')+'</td>'
       +'<td style="text-align:center"><input type="checkbox" class="coupon-chk"'+cpn+' onchange="toggleCoupon(\''+c.id+'\')"></td>'
       +'<td>'+esc(c.note)+'</td>'
       +'<td class="td-act"><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>';
