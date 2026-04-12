@@ -135,6 +135,26 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 .stepper span{width:40px;text-align:center;font-size:15px;font-weight:600}
 .other-input{margin-top:6px;display:none}.other-input.on{display:block}
 
+/* Excel Import */
+.xl-drop{border:2px dashed var(--g300);border-radius:var(--r);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--g50);margin-bottom:18px}
+.xl-drop:hover,.xl-drop.drag{border-color:var(--p);background:var(--pl)}
+.xl-drop svg{width:36px;height:36px;stroke:var(--g400);fill:none;stroke-width:1.5;margin-bottom:8px}.xl-drop:hover svg{stroke:var(--p)}
+.xl-drop .xl-title{font-size:14px;font-weight:600;color:var(--g700)}.xl-drop:hover .xl-title{color:var(--p)}
+.xl-drop p{font-size:12px;color:var(--g500);margin-top:4px}
+.xl-map{margin-bottom:16px}.xl-map-title{font-size:13px;font-weight:600;color:var(--g600);margin-bottom:10px}
+.xl-map-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.xl-map-row label{width:90px;font-weight:500;color:var(--g600);flex-shrink:0}
+.xl-map-row select{flex:1;padding:7px 10px;border:1.5px solid var(--g200);border-radius:6px;font-size:13px;outline:none}
+.xl-map-row select:focus{border-color:var(--p)}
+.xl-map-row .xl-auto{font-size:11px;color:var(--s);font-weight:600;flex-shrink:0}
+.xl-preview{max-height:300px;overflow:auto;border:1px solid var(--g200);border-radius:var(--rs);margin-bottom:16px}
+.xl-preview table{width:100%;border-collapse:collapse;font-size:12px}
+.xl-preview th{padding:8px 10px;background:var(--g50);border-bottom:2px solid var(--g200);font-weight:600;color:var(--g600);text-align:left;position:sticky;top:0;white-space:nowrap}
+.xl-preview td{padding:6px 10px;border-bottom:1px solid var(--g100)}
+.xl-preview tr:hover{background:#f8faff}
+.xl-preview .xl-skip{color:var(--g400);text-decoration:line-through}
+.xl-info{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--pl);border-radius:var(--rs);margin-bottom:14px;font-size:13px;color:var(--p);font-weight:500}
+
 /* Toast & Loader & Delete bar */
 .toast{position:fixed;bottom:20px;right:20px;padding:12px 22px;border-radius:var(--rs);font-size:14px;font-weight:500;z-index:200;transform:translateY(80px);opacity:0;transition:all .3s;box-shadow:0 6px 20px rgba(0,0,0,.12)}
 .toast.on{transform:translateY(0);opacity:1}.toast.ok{background:var(--s);color:#fff}.toast.er{background:var(--d);color:#fff}
@@ -160,6 +180,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="topbar"><h1>Partner Contacts</h1>
 <div class="topbar-btns">
 <button class="btn btn-p" onclick="openModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>신규 연락처 등록</button>
+<button class="btn btn-o" onclick="openXL()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>엑셀 가져오기</button>
 <button class="btn btn-o btn-s" onclick="refresh()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>새로고침</button>
 <button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
 <div class="main">
@@ -237,6 +258,31 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="det-add-row"><label>수량</label><div class="stepper"><button onclick="stepQty(-1)">-</button><span id="cQty">1</span><button onclick="stepQty(1)">+</button></div></div>
 <button class="btn btn-p btn-s" onclick="addCpn()" style="width:100%;justify-content:center;margin-top:8px">추가</button></div></div>
 </div></div>
+
+<!-- EXCEL IMPORT MODAL -->
+<div class="overlay" id="xlOv" onclick="if(event.target===this)closeXL()"><div class="modal" style="width:700px">
+<div class="modal-head"><h2 id="xlTitle">엑셀 파일 가져오기</h2><button class="modal-x" onclick="closeXL()">&times;</button></div>
+<div class="modal-body">
+<div id="xlStep1">
+<div class="xl-drop" id="xlDrop" onclick="document.getElementById('xlFile').click()">
+<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+<div class="xl-title">엑셀 파일을 드래그하거나 클릭하여 선택</div>
+<p>.xlsx, .xls, .csv 지원</p></div>
+<input type="file" id="xlFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXLFile(this)">
+</div>
+<div id="xlStep2" style="display:none">
+<div class="xl-info" id="xlFileInfo"></div>
+<div class="fg"><label>시트 선택</label><select id="xlSheet" onchange="xlSheetChanged()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:14px;outline:none"></select></div>
+<div class="xl-map" id="xlMapArea">
+<div class="xl-map-title">컬럼 매핑</div>
+<div id="xlMapRows"></div></div>
+<div class="fg"><label>구분 (카테고리) <span class="req">*</span></label><select id="xlCat"></select></div>
+<div id="xlPreviewWrap" style="display:none">
+<div style="font-size:13px;font-weight:600;color:var(--g600);margin-bottom:8px">미리보기 <span id="xlPreviewCount" style="color:var(--p)"></span></div>
+<div class="xl-preview"><table><thead id="xlPHead"></thead><tbody id="xlPBody"></tbody></table></div></div>
+<div class="modal-btns"><button class="btn btn-o" onclick="resetXL()">다른 파일</button><button class="btn btn-p" id="xlSubBtn" onclick="submitXL()">가져오기</button></div>
+</div>
+</div></div></div>
 
 <div class="loader" id="loader"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
@@ -551,6 +597,86 @@ function parseCard(text){var r={company:'',name:'',title:'',team:'',phone:'',ema
   if(r.title){var m=r.title.match(titleRe);if(m&&r.title.length>m[0].length+5)r.title=m[0]}return r}
 function fillForm(p){['Co','Nm','Ti','Tm','Ph','Em'].forEach(function(k,i){var keys=['company','name','title','team','phone','email'];
   if(p[keys[i]])document.getElementById('f'+k).value=p[keys[i]]});toast('명함 인식 완료 - 내용을 확인해주세요','ok')}
+
+// === Excel Import ===
+var xlWorkbook=null,xlRows=[],xlHeaders=[];
+var FIELD_MAP=[
+  {key:'company',label:'기업',words:['기업','회사','기업명','회사명','법인','소속','업체','company','corp','organization','org']},
+  {key:'name',label:'성함',words:['이름','성명','성함','담당자','담당자명','name','contact']},
+  {key:'title',label:'직책',words:['직책','직급','직위','타이틀','position','title','role','rank']},
+  {key:'team',label:'조직/팀',words:['팀','조직','부서','팀명','부문','본부','department','dept','team','division','unit']},
+  {key:'phone',label:'연락처(M)',words:['전화','연락처','핸드폰','휴대폰','휴대전화','모바일','phone','mobile','tel','hp','cell']},
+  {key:'email',label:'연락처(E)',words:['이메일','메일','email','e-mail','mail']},
+  {key:'note',label:'비고',words:['비고','메모','참고','노트','note','memo','remark','comment','기타']}
+];
+function openXL(){resetXL();document.getElementById('xlOv').classList.add('on')}
+function closeXL(){document.getElementById('xlOv').classList.remove('on');xlWorkbook=null;xlRows=[];xlHeaders=[]}
+function resetXL(){document.getElementById('xlStep1').style.display='';document.getElementById('xlStep2').style.display='none';
+  document.getElementById('xlFile').value='';xlWorkbook=null;xlRows=[];xlHeaders=[]}
+async function loadSheetJS(){if(window.XLSX)return;
+  return new Promise(function(ok){var s=document.createElement('script');s.src='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';s.onload=ok;document.head.appendChild(s)})}
+function handleXLFile(input){if(!input.files||!input.files.length)return;
+  var file=input.files[0];var reader=new FileReader();reader.onload=async function(e){
+    loading(true);await loadSheetJS();
+    try{xlWorkbook=XLSX.read(e.target.result,{type:'array'});
+      var sel=document.getElementById('xlSheet');
+      sel.innerHTML=xlWorkbook.SheetNames.map(function(n,i){return'<option value="'+i+'">'+esc(n)+'</option>'}).join('');
+      document.getElementById('xlFileInfo').textContent=file.name+' · '+xlWorkbook.SheetNames.length+'개 시트';
+      document.getElementById('xlCat').innerHTML=db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
+      if(curFilter!=='all')document.getElementById('xlCat').value=curFilter;
+      document.getElementById('xlStep1').style.display='none';document.getElementById('xlStep2').style.display='';
+      xlSheetChanged()}catch(er){toast('파일 읽기 실패: '+er.message,'er')}loading(false)};
+  reader.readAsArrayBuffer(file)}
+function xlSheetChanged(){var idx=parseInt(document.getElementById('xlSheet').value);
+  var sheet=xlWorkbook.Sheets[xlWorkbook.SheetNames[idx]];
+  var json=XLSX.utils.sheet_to_json(sheet,{header:1,defval:''});
+  if(!json.length){toast('빈 시트입니다','er');return}
+  xlHeaders=json[0].map(function(h){return String(h).trim()});
+  xlRows=json.slice(1).filter(function(r){return r.some(function(c){return String(c).trim()})});
+  buildMapping();renderXLPreview()}
+function autoMatch(header){var h=header.toLowerCase().replace(/[\s_\-().]/g,'');
+  for(var i=0;i<FIELD_MAP.length;i++){for(var j=0;j<FIELD_MAP[i].words.length;j++){
+    if(h.indexOf(FIELD_MAP[i].words[j].toLowerCase())>=0)return FIELD_MAP[i].key}}return''}
+function buildMapping(){var area=document.getElementById('xlMapRows');
+  area.innerHTML=FIELD_MAP.map(function(f){
+    var opts='<option value="">— 매핑 안 함 —</option>'+xlHeaders.map(function(h,i){return'<option value="'+i+'">'+esc(h)+'</option>'}).join('');
+    var matched=false;
+    for(var i=0;i<xlHeaders.length;i++){if(autoMatch(xlHeaders[i])===f.key){opts=opts.replace('value="'+i+'"','value="'+i+'" selected');matched=true;break}}
+    return'<div class="xl-map-row"><label>'+f.label+'</label><select id="xlm_'+f.key+'" onchange="renderXLPreview()">'+opts+'</select>'
+      +(matched?'<span class="xl-auto">자동</span>':'')+'</div>'}).join('')}
+function getXLMapping(){var m={};FIELD_MAP.forEach(function(f){var v=document.getElementById('xlm_'+f.key).value;m[f.key]=v===''?-1:parseInt(v)});return m}
+function renderXLPreview(){var m=getXLMapping();var hasAny=Object.values(m).some(function(v){return v>=0});
+  var wrap=document.getElementById('xlPreviewWrap');
+  if(!hasAny||!xlRows.length){wrap.style.display='none';return}
+  wrap.style.display='';
+  var fields=FIELD_MAP.filter(function(f){return m[f.key]>=0});
+  document.getElementById('xlPHead').innerHTML='<tr><th>#</th>'+fields.map(function(f){return'<th>'+f.label+'</th>'}).join('')+'</tr>';
+  var valid=0;
+  var maxShow=Math.min(xlRows.length,50);
+  document.getElementById('xlPBody').innerHTML=xlRows.slice(0,maxShow).map(function(r,ri){
+    var co=m.company>=0?String(r[m.company]||'').trim():'';
+    var nm=m.name>=0?String(r[m.name]||'').trim():'';
+    var skip=!co&&!nm;if(!skip)valid++;
+    return'<tr'+(skip?' class="xl-skip"':'')+'><td>'+(ri+1)+'</td>'+fields.map(function(f){return'<td>'+esc(String(r[m[f.key]]||'').trim())+'</td>'}).join('')+'</tr>'}).join('');
+  var totalValid=xlRows.filter(function(r){var co=m.company>=0?String(r[m.company]||'').trim():'';var nm=m.name>=0?String(r[m.name]||'').trim():'';return co||nm}).length;
+  document.getElementById('xlPreviewCount').textContent='('+totalValid+'명'+(xlRows.length>maxShow?' / 상위 '+maxShow+'개 표시':'')+')';}
+async function submitXL(){var m=getXLMapping();var cat=document.getElementById('xlCat').value;
+  if(!cat){toast('구분을 선택하세요','er');return}
+  var items=xlRows.map(function(r){var o={};FIELD_MAP.forEach(function(f){o[f.key]=m[f.key]>=0?String(r[m[f.key]]||'').trim():''});return o})
+    .filter(function(o){return o.company||o.name});
+  if(!items.length){toast('가져올 데이터가 없습니다','er');return}
+  var btn=document.getElementById('xlSubBtn');btn.disabled=true;btn.textContent='가져오는 중...';
+  items.forEach(function(o){db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:cat,
+    company:o.company,name:o.name,title:o.title||'',team:o.team||'',phone:o.phone||'',email:o.email||'',note:o.note||'',meetings:[],coupons:[]})});
+  try{var r=await saveData('Excel import '+items.length);
+    if(r.content){toast(items.length+'명 가져오기 완료','ok');closeXL();renderStats();updateFilterOptions();render()}
+    else{for(var i=0;i<items.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='가져오기'}}
+  catch(e){for(var i=0;i<items.length;i++)db.contacts.pop();toast('오류','er');btn.disabled=false;btn.textContent='가져오기'}}
+// Drag & drop
+document.addEventListener('DOMContentLoaded',function(){var drop=document.getElementById('xlDrop');if(!drop)return;
+  ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag')})});
+  ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag')})});
+  drop.addEventListener('drop',function(e){var dt=e.dataTransfer;if(dt.files&&dt.files.length){document.getElementById('xlFile').files=dt.files;handleXLFile(document.getElementById('xlFile'))}})});
 
 autoLogin();
 </script>
