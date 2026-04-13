@@ -310,7 +310,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=10;
+var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=15;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
