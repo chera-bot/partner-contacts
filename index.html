@@ -212,7 +212,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 </tr></thead><tbody id="tbody"></tbody></table></div></div></div>
 
 <!-- ADD/EDIT MODAL -->
-<div class="overlay" id="ov" onclick="if(event.target===this)closeModal()"><div class="modal">
+<div class="overlay" id="ov"><div class="modal">
 <div class="modal-head"><h2 id="modalTitle">신규 연락처 등록</h2><button class="modal-x" onclick="closeModal()">&times;</button></div>
 <div class="modal-body">
 <div class="ocr-box" id="ocrBox" onclick="document.getElementById('ocrFile').click()">
@@ -248,7 +248,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 </div></div></div></div>
 
 <!-- DETAIL PANEL -->
-<div class="overlay" id="detOv" onclick="if(event.target===this)closeDet()"><div class="modal detail">
+<div class="overlay" id="detOv"><div class="modal detail">
 <div class="det-info"><div class="det-avatar" id="detAvatar"></div>
 <div class="det-meta"><h3 id="detName"></h3><p id="detSub"></p></div>
 <button class="modal-x" onclick="closeDet()" style="margin-left:auto">&times;</button></div>
@@ -272,7 +272,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 </div></div>
 
 <!-- EXCEL IMPORT MODAL -->
-<div class="overlay" id="xlOv" onclick="if(event.target===this)closeXL()"><div class="modal" style="width:700px">
+<div class="overlay" id="xlOv"><div class="modal" style="width:700px">
 <div class="modal-head"><h2 id="xlTitle">파일 업로드</h2><button class="modal-x" onclick="closeXL()">&times;</button></div>
 <div class="modal-body">
 <div id="xlStep1">
@@ -297,7 +297,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 </div></div></div>
 
 <!-- CATEGORY MANAGEMENT MODAL -->
-<div class="overlay" id="catOv" onclick="if(event.target===this)closeCatMgr()"><div class="modal">
+<div class="overlay" id="catOv"><div class="modal">
 <div class="modal-head"><h2>구분 관리</h2><button class="modal-x" onclick="closeCatMgr()">&times;</button></div>
 <div class="modal-body"><div id="catMgrList"></div>
 <button class="btn btn-o" onclick="closeCatMgr()" style="width:100%;justify-content:center;margin-top:12px">닫기</button>
