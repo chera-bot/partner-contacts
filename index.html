@@ -199,6 +199,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="render()"></div>
 <div class="stats" id="stats"></div>
 <div id="filterBar" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+<select id="fltCat" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:120px"><option value="">구분: 전체</option></select>
 <select id="fltCompany" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
 <select id="fltCoupon" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
@@ -362,15 +363,22 @@ function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contac
   db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')" style="border-left:3px solid '+col.fg+'"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
   el.innerHTML=h}
 function updateFilterOptions(){
-  var list=curFilter==='all'?db.contacts:db.contacts.filter(function(c){return c.category===curFilter});
+  var fCat=document.getElementById('fltCat').value;
+  var catSel=document.getElementById('fltCat');var curCat=catSel.value;
+  catSel.innerHTML='<option value="">구분: 전체</option>'+db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
+  if(db.categories.indexOf(curCat)>=0)catSel.value=curCat;else catSel.value='';
+  var list=db.contacts;
+  if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
+  if(fCat)list=list.filter(function(c){return c.category===fCat});
   var companies={};list.forEach(function(c){if(c.company)companies[c.company]=true});
   var sel=document.getElementById('fltCompany');var cur=sel.value;
   sel.innerHTML='<option value="">기업: 전체</option>'+Object.keys(companies).sort().map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
   if(companies[cur])sel.value=cur;else sel.value=''}
-function clearFilters(){document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';render()}
+function clearFilters(){document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';render()}
 function render(){var tb=document.getElementById('tbody'),q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
-  var fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value;
+  var fCat=document.getElementById('fltCat').value,fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value;
   if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
+  if(fCat)list=list.filter(function(c){return c.category===fCat});
   if(fCo)list=list.filter(function(c){return c.company===fCo});
   if(fCpn==='Y')list=list.filter(function(c){return c.coupons&&c.coupons.length>0});
   if(fCpn==='N')list=list.filter(function(c){return!c.coupons||!c.coupons.length});
