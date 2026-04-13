@@ -230,8 +230,8 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="chk"><input type="checkbox" id="fNewChk" onchange="toggleNew();liveDupCheck()"><label for="fNewChk">새 구분 추가</label></div>
 <div class="newcat" id="fNewWrap"><input type="text" id="fNewCat" placeholder="새 구분 이름 (예: Legal)" oninput="liveDupCheck()"></div></div>
 <div class="fg"><label>기업 <span class="req">*</span></label><input type="text" id="fCo" placeholder="기업명" oninput="liveDupCheck()"></div>
-<div class="row2"><div class="fg"><label>성함 <span class="req">*</span></label><input type="text" id="fNm" placeholder="이름" oninput="liveDupCheck()"></div>
-<div class="fg"><label>직책</label><input type="text" id="fTi" placeholder="직책"></div></div>
+<div class="row2"><div class="fg" style="flex:2"><label>성함 <span class="req">*</span></label><input type="text" id="fNm" placeholder="이름" oninput="liveDupCheck()"></div>
+<div class="fg" style="flex:1"><label>직책</label><input type="text" id="fTi" placeholder="직책"></div></div>
 <div class="fg"><label>조직/팀</label><input type="text" id="fTm" placeholder="조직 또는 팀명"></div>
 <div id="dupWarn" style="display:none;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:14px;font-size:13px;color:var(--d)"></div>
 <div class="row2"><div class="fg"><label>연락처 (M)</label><input type="tel" id="fPh" placeholder="010-0000-0000" oninput="autoFmtPhone(this);liveDupCheck()"></div>
