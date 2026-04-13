@@ -46,9 +46,19 @@ thead th{padding:12px 14px;text-align:left;font-size:11px;font-weight:600;color:
 tbody td{padding:12px 14px;font-size:14px;border-bottom:1px solid var(--g100);vertical-align:middle}
 tbody tr:hover{background:#f8faff}tbody tr.selected{background:#eff6ff}
 .badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600}
-.b-IR{background:#dbeafe;color:#1d4ed8}.b-CorpDev{background:#fef3c7;color:#92400e}.b-Invest{background:#d1fae5;color:#065f46}
-.b-Mobility{background:#ede9fe;color:#5b21b6}.b-PGPayment{background:#fce7f3;color:#9d174d}.b-Insurance{background:#fed7aa;color:#9a3412}
-.badge:not([class*="b-"]){background:var(--g100);color:var(--g600)}
+/* Category Management */
+.cat-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--g200);border-radius:var(--rs);margin-bottom:8px;flex-wrap:wrap}
+.cat-item:hover{border-color:var(--p)}
+.cat-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.cat-name{flex:1;font-size:14px;font-weight:500;min-width:80px}
+.cat-cnt{font-size:12px;color:var(--g500);flex-shrink:0}
+.cat-actions{display:flex;gap:4px;flex-shrink:0}
+.cat-btn{width:28px;height:28px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--g100);color:var(--g500)}
+.cat-btn:hover{background:var(--pl);color:var(--p)}
+.cat-btn.cdel:hover{background:#fee2e2;color:var(--d)}
+.cat-move{width:100%;margin-top:8px;padding:14px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--rs)}
+.cat-move p{font-size:13px;color:var(--d);margin-bottom:8px;font-weight:500}
+.cat-move select{width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:6px;font-size:14px;outline:none;margin-bottom:10px}
 .mono{font-family:"SF Mono",Consolas,monospace;font-size:13px;color:var(--g600)}
 .empty{text-align:center;padding:50px 20px;color:var(--g400)}.empty p{font-size:15px;margin-top:12px}
 th.th-chk,td.td-chk{width:40px;text-align:center}
@@ -181,6 +191,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="topbar-btns">
 <button class="btn btn-p" onclick="openModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>신규 연락처 등록</button>
 <button class="btn btn-o" onclick="openXL()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>파일 업로드</button>
+<button class="btn btn-o btn-s" onclick="openCatMgr()">구분 관리</button>
 <button class="btn btn-o btn-s" onclick="refresh()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>새로고침</button>
 <button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
 <div class="main">
@@ -284,6 +295,13 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 </div>
 </div></div></div>
 
+<!-- CATEGORY MANAGEMENT MODAL -->
+<div class="overlay" id="catOv" onclick="if(event.target===this)closeCatMgr()"><div class="modal">
+<div class="modal-head"><h2>구분 관리</h2><button class="modal-x" onclick="closeCatMgr()">&times;</button></div>
+<div class="modal-body"><div id="catMgrList"></div>
+<button class="btn btn-o" onclick="closeCatMgr()" style="width:100%;justify-content:center;margin-top:12px">닫기</button>
+</div></div></div>
+
 <div class="loader" id="loader"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
 
@@ -292,6 +310,9 @@ var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
 var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
+var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
+function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
+function badgeHtml(cat){var c=catColor(cat);return'<span class="badge" style="background:'+c.bg+';color:'+c.fg+'">'+esc(cat)+'</span>'}
 var selMeet='',cpnQty=1;
 
 // === Crypto ===
@@ -329,6 +350,7 @@ async function ghPut(p,c,sha,m){var b={message:m,content:btoa(unescape(encodeURI
 async function loadData(){loading(true);try{var r=await ghGet(FILE);fileSha=r.sha;
   db=JSON.parse(await decryptData(decodeURIComponent(escape(atob(r.content.replace(/\n/g,''))))));
   db.contacts.forEach(function(c){if(!c.meetings)c.meetings=[];if(!c.coupons)c.coupons=[]});
+  var _mi=db.categories.indexOf('Mobility');if(_mi>=0){var _tgt=db.categories.filter(function(_,j){return j!==_mi})[0]||'IR';db.contacts.forEach(function(c){if(c.category==='Mobility')c.category=_tgt});db.categories.splice(_mi,1);saveData('Remove Mobility')}
   }catch(e){toast('데이터 로드 실패','er')}selected={};updateDelBar();renderStats();updateFilterOptions();render();loading(false)}
 async function saveData(m){var enc=await encryptData(JSON.stringify(db,null,2));var r=await ghPut(FILE,enc,fileSha,m||'Update');if(r.content)fileSha=r.content.sha;return r}
 async function refresh(){await loadData();toast('새로고침 완료','ok')}
@@ -337,7 +359,7 @@ async function refresh(){await loadData();toast('새로고침 완료','ok')}
 function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contacts.length;
   db.categories.forEach(function(c){cn[c]=0});db.contacts.forEach(function(c){cn[c.category]=(cn[c.category]||0)+1});
   var h='<div class="stat total'+(curFilter==='all'?' on':'')+'" onclick="setF(\'all\')"><div class="stat-label">전체</div><div class="stat-num">'+t+'</div></div>';
-  db.categories.forEach(function(c){h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
+  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')" style="border-left:3px solid '+col.fg+'"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
   el.innerHTML=h}
 function updateFilterOptions(){
   var list=curFilter==='all'?db.contacts:db.contacts.filter(function(c){return c.category===curFilter});
@@ -362,7 +384,7 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
     var lastMeet=c.meetings&&c.meetings.length?c.meetings.sort(function(a,b){return b.date.localeCompare(a.date)})[0]:null;
     var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
     return '<tr class="'+sel+'"><td class="td-chk"><input type="checkbox"'+chk+' onchange="toggleSel(\''+c.id+'\')"></td>'
-      +'<td><span class="badge b-'+c.category.replace(/\//g,'')+'">'+esc(c.category)+'</span></td>'
+      +'<td>'+badgeHtml(c.category)+'</td>'
       +'<td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
       +'<td class="mono">'+(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="color:var(--g600);text-decoration:none">'+esc(c.phone)+'</a>':'')+'</td>'
       +'<td class="mono">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--g600);text-decoration:none">'+esc(c.email)+'</a>':'')+'</td>'
@@ -433,7 +455,7 @@ function renderManualQ(){var wrap=document.getElementById('manualQueue');var lis
   wrap.style.display='block';document.getElementById('mqLabel').textContent='대기 중 '+manualQ.length+'명';
   document.getElementById('subBtn').textContent='전체 등록 ('+(manualQ.length)+'+1)';
   list.innerHTML=manualQ.map(function(c,i){return'<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--g50);border-radius:6px;margin-bottom:4px;font-size:13px">'
-    +'<span><b>'+esc(c.name)+'</b> · '+esc(c.company)+' · <span class="badge b-'+c.category.replace(/\//g,'')+'">'+esc(c.category)+'</span></span>'
+    +'<span><b>'+esc(c.name)+'</b> · '+esc(c.company)+' · '+badgeHtml(c.category)+'</span>'
     +'<button onclick="removeFromQ('+i+')" style="border:none;background:none;cursor:pointer;color:var(--g400);font-size:14px">&times;</button></div>'}).join('')}
 async function submit(){var d=getFormData();var isNew=d.isNewCat;
   // If editing
@@ -597,6 +619,40 @@ function parseCard(text){var r={company:'',name:'',title:'',team:'',phone:'',ema
   if(r.title){var m=r.title.match(titleRe);if(m&&r.title.length>m[0].length+5)r.title=m[0]}return r}
 function fillForm(p){['Co','Nm','Ti','Tm','Ph','Em'].forEach(function(k,i){var keys=['company','name','title','team','phone','email'];
   if(p[keys[i]])document.getElementById('f'+k).value=p[keys[i]]});toast('명함 인식 완료 - 내용을 확인해주세요','ok')}
+
+// === Category Management ===
+function openCatMgr(){renderCatMgr();document.getElementById('catOv').classList.add('on')}
+function closeCatMgr(){document.getElementById('catOv').classList.remove('on');renderStats();updateFilterOptions();render()}
+function renderCatMgr(){var el=document.getElementById('catMgrList');
+  el.innerHTML=db.categories.map(function(cat,i){var cnt=db.contacts.filter(function(c){return c.category===cat}).length;var col=CAT_COLORS[i%CAT_COLORS.length];
+    return'<div class="cat-item" id="ci'+i+'"><div class="cat-dot" style="background:'+col.fg+'"></div>'
+      +'<div class="cat-name" id="cn'+i+'">'+esc(cat)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+      +'<div class="cat-actions"><button class="cat-btn" onclick="editCatName('+i+')" title="이름 수정"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>'
+      +'<button class="cat-btn cdel" onclick="delCatStart('+i+')" title="삭제">&times;</button></div></div>'}).join('')}
+function editCatName(i){var el=document.getElementById('cn'+i);var old=db.categories[i];
+  el.innerHTML='<input type="text" value="'+esc(old)+'" style="width:100%;padding:5px 8px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onkeydown="if(event.key===\'Enter\')saveCatName('+i+',this.value);if(event.key===\'Escape\')renderCatMgr()" onblur="saveCatName('+i+',this.value)">';
+  el.querySelector('input').focus();el.querySelector('input').select()}
+async function saveCatName(i,nv){nv=(nv||'').trim();var old=db.categories[i];
+  if(!nv||nv===old){renderCatMgr();return}
+  if(db.categories.indexOf(nv)>=0){toast('이미 존재하는 구분입니다','er');renderCatMgr();return}
+  db.categories[i]=nv;db.contacts.forEach(function(c){if(c.category===old)c.category=nv});
+  if(curFilter===old)curFilter=nv;
+  try{await saveData('Rename: '+old+' → '+nv);toast(old+' → '+nv,'ok');renderCatMgr()}catch(e){toast('저장 실패','er')}}
+function delCatStart(i){var cat=db.categories[i];var cnt=db.contacts.filter(function(c){return c.category===cat}).length;
+  if(!cnt){if(confirm('"'+cat+'" 구분을 삭제하시겠습니까?'))delCatConfirm(i,null);return}
+  var others=db.categories.filter(function(_,j){return j!==i});
+  if(!others.length){toast('최소 1개 구분이 필요합니다','er');return}
+  var item=document.getElementById('ci'+i);var ex=item.querySelector('.cat-move');if(ex)ex.remove();
+  var div=document.createElement('div');div.className='cat-move';
+  div.innerHTML='<p>\"'+esc(cat)+'\"에 '+cnt+'명의 연락처가 있습니다. 어디로 이동할까요?</p>'
+    +'<select id="cmTo">'+others.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('')+'</select>'
+    +'<div style="display:flex;gap:8px"><button class="btn btn-d btn-s" onclick="delCatConfirm('+i+',document.getElementById(\'cmTo\').value)">삭제 및 이동</button>'
+    +'<button class="btn btn-o btn-s" onclick="renderCatMgr()">취소</button></div>';
+  item.appendChild(div)}
+async function delCatConfirm(i,moveTo){var cat=db.categories[i];
+  if(moveTo)db.contacts.forEach(function(c){if(c.category===cat)c.category=moveTo});
+  db.categories.splice(i,1);if(curFilter===cat)curFilter='all';
+  try{await saveData('Delete: '+cat+(moveTo?' → '+moveTo:''));toast('"'+cat+'" 삭제','ok');renderCatMgr()}catch(e){toast('저장 실패','er')}}
 
 // === Excel Import ===
 var xlWorkbook=null,xlRows=[],xlHeaders=[];
