@@ -226,9 +226,9 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div id="batchList"></div>
 <div class="modal-btns"><button class="btn btn-o" onclick="closeBatch()">취소</button><button class="btn btn-p" id="batchSubBtn" onclick="submitBatch()">전체 등록</button></div></div>
 <div id="singleForm">
-<div class="fg"><label>구분 <span class="req">*</span></label><select id="fCat"></select>
-<div class="chk"><input type="checkbox" id="fNewChk" onchange="toggleNew()"><label for="fNewChk">새 구분 추가</label></div>
-<div class="newcat" id="fNewWrap"><input type="text" id="fNewCat" placeholder="새 구분 이름 (예: Legal)"></div></div>
+<div class="fg"><label>구분 <span class="req">*</span></label><select id="fCat" onchange="liveDupCheck()"></select>
+<div class="chk"><input type="checkbox" id="fNewChk" onchange="toggleNew();liveDupCheck()"><label for="fNewChk">새 구분 추가</label></div>
+<div class="newcat" id="fNewWrap"><input type="text" id="fNewCat" placeholder="새 구분 이름 (예: Legal)" oninput="liveDupCheck()"></div></div>
 <div class="fg"><label>기업 <span class="req">*</span></label><input type="text" id="fCo" placeholder="기업명" oninput="liveDupCheck()"></div>
 <div class="row2"><div class="fg"><label>성함 <span class="req">*</span></label><input type="text" id="fNm" placeholder="이름" oninput="liveDupCheck()"></div>
 <div class="fg"><label>직책</label><input type="text" id="fTi" placeholder="직책"></div></div>
@@ -440,17 +440,16 @@ function getFormData(){var isNew=document.getElementById('fNewChk').checked;
     phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),note:document.getElementById('fNo').value.trim(),isNewCat:isNew}}
 function checkDup(d){return db.contacts.find(function(c){return c.company===d.company&&c.name===d.name&&d.phone&&c.phone===d.phone})}
 function liveDupCheck(){
-  var co=document.getElementById('fCo').value.trim(),nm=document.getElementById('fNm').value.trim(),ph=document.getElementById('fPh').value.trim();
+  var isNew=document.getElementById('fNewChk').checked;
+  var cat=isNew?document.getElementById('fNewCat').value.trim():document.getElementById('fCat').value;
+  var co=document.getElementById('fCo').value.trim(),nm=document.getElementById('fNm').value.trim();
   var warn=document.getElementById('dupWarn');
-  if(!co||!nm){warn.style.display='none';return}
+  if(!cat||!co||!nm){warn.style.display='none';return}
   var matches=db.contacts.filter(function(c){
     if(editId&&c.id===editId)return false;
-    var coMatch=c.company===co,nmMatch=c.name===nm,phMatch=ph&&c.phone===ph;
-    return(coMatch&&nmMatch)||(nmMatch&&phMatch)||(coMatch&&phMatch)});
+    return c.category===cat&&c.company===co&&c.name===nm});
   if(!matches.length){warn.style.display='none';return}
-  var exact=matches.find(function(c){return c.company===co&&c.name===nm&&ph&&c.phone===ph});
-  if(exact){warn.innerHTML='<b>중복 주의!</b> '+esc(co)+' '+esc(nm)+' / '+fmtPhone(ph)+(exact.email?' / '+esc(exact.email):'')+' 이미 등록되어 있습니다.';warn.style.display='block';return}
-  warn.innerHTML='<b>유사 연락처 발견:</b><br>'+matches.map(function(c){return esc(c.company)+' '+esc(c.name)+(c.phone?' / '+fmtPhone(c.phone):'')+(c.email?' / '+esc(c.email):'')}).join('<br>');
+  warn.innerHTML='<b>중복 주의!</b> '+matches.map(function(c){return badgeHtml(c.category)+' '+esc(c.company)+' '+esc(c.name)+(c.phone?' / '+fmtPhone(c.phone):'')+(c.email?' / '+esc(c.email):'')+' 이미 등록되어 있습니다.'}).join('<br>');
   warn.style.display='block'}
 function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
   if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
