@@ -401,7 +401,7 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
       +'<td class="td-cpn" onclick="openDet(\''+c.id+'\',1)">'+(cpnCnt?'<span class="cpn-badge">'+cpnCnt+'회</span>':'<span style="color:var(--g400)">-</span>')+'</td>'
       +'<td><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>'}).join('');
   document.getElementById('chkAll').checked=false}
-function setF(f){curFilter=f;document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltCat').style.display=f==='all'?'':'none';renderStats();updateFilterOptions();render()}
+function setF(f){curFilter=f;document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltCat').style.display=f==='all'?'':'none';var cards=document.getElementById('stats').children;for(var i=0;i<cards.length;i++){var c=cards[i];c.classList.toggle('on',i===0?f==='all':db.categories[i-1]===f)}updateFilterOptions();render()}
 
 // === Selection & Delete ===
 function toggleSel(id){if(selected[id])delete selected[id];else selected[id]=true;updateDelBar();render()}
