@@ -438,7 +438,7 @@ function getFormData(){var isNew=document.getElementById('fNewChk').checked;
   return{category:cat,company:document.getElementById('fCo').value.trim(),name:document.getElementById('fNm').value.trim(),
     title:document.getElementById('fTi').value.trim(),team:document.getElementById('fTm').value.trim(),
     phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),note:document.getElementById('fNo').value.trim(),isNewCat:isNew}}
-function checkDup(d){return db.contacts.find(function(c){return c.company===d.company&&c.name===d.name&&d.phone&&c.phone===d.phone})}
+function checkDup(d){return db.contacts.find(function(c){return(!editId||c.id!==editId)&&c.category===d.category&&c.company===d.company&&c.name===d.name})}
 function liveDupCheck(){
   var isNew=document.getElementById('fNewChk').checked;
   var cat=isNew?document.getElementById('fNewCat').value.trim():document.getElementById('fCat').value;
@@ -453,7 +453,7 @@ function liveDupCheck(){
   warn.style.display='block'}
 function addToQueue(){var d=getFormData();if(!d.company||!d.name){toast('기업명과 성함은 필수입니다','er');return}
   if(d.isNewCat&&!d.category){toast('새 구분 이름을 입력하세요','er');return}
-  var dup=checkDup(d);if(dup&&!confirm(d.company+' '+d.name+' ('+d.phone+') 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;
+  var dup=checkDup(d);if(dup&&!confirm('['+d.category+'] '+d.company+' '+d.name+' 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;
   manualQ.push(d);renderManualQ();
   ['fCo','fNm','fTi','fTm','fPh','fEm','fNo'].forEach(function(x){document.getElementById(x).value=''});
   toast(d.name+' 추가됨 ('+manualQ.length+'명 대기 중)','ok')}
@@ -476,7 +476,7 @@ async function submit(){var d=getFormData();var isNew=d.isNewCat;
     return}
   // Collect all: queue + current form (if filled)
   var all=manualQ.slice();
-  if(d.company&&d.name){var dup=checkDup(d);if(dup&&!confirm(d.company+' '+d.name+' ('+d.phone+') 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;all.push(d)}
+  if(d.company&&d.name){var dup=checkDup(d);if(dup&&!confirm('['+d.category+'] '+d.company+' '+d.name+' 이미 등록된 연락처입니다.\n그래도 추가하시겠습니까?'))return;all.push(d)}
   if(!all.length){toast('기업명과 성함은 필수입니다','er');return}
   var btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='등록 중...';
   all.forEach(function(item){
