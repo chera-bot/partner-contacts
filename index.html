@@ -196,20 +196,21 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
 <div class="main">
 <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-<input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="render()"></div>
+<input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="curPage=1;render()"></div>
 <div class="stats" id="stats"></div>
 <div id="filterBar" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-<select id="fltCat" onchange="updateFilterOptions();render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:120px"><option value="">구분: 전체</option></select>
-<select id="fltCompany" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
-<select id="fltCoupon" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
+<select id="fltCat" onchange="curPage=1;updateFilterOptions();render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:120px"><option value="">구분: 전체</option></select>
+<select id="fltCompany" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
+<select id="fltCoupon" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
-<div style="margin-left:auto"><select id="sortBy" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="name">이름순</option><option value="meeting">최근 미팅순</option></select></div>
+<div style="margin-left:auto"><select id="sortBy" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="name">이름순</option><option value="meeting">최근 미팅순</option></select></div>
 </div>
 <div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
 <div class="tbl-wrap"><table><thead><tr>
 <th class="th-chk"><input type="checkbox" id="chkAll" onchange="toggleAll()"></th>
 <th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>연락처(M)</th><th>연락처(E)</th><th>최근미팅</th><th>쿠폰</th><th></th>
-</tr></thead><tbody id="tbody"></tbody></table></div></div></div>
+</tr></thead><tbody id="tbody"></tbody></table></div>
+<div id="pager" style="display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 0;font-size:13px"></div></div></div>
 
 <!-- ADD/EDIT MODAL -->
 <div class="overlay" id="ov"><div class="modal">
@@ -309,7 +310,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null;
+var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
@@ -374,7 +375,7 @@ function updateFilterOptions(){
   var sel=document.getElementById('fltCompany');var cur=sel.value;
   sel.innerHTML='<option value="">기업: 전체</option>'+Object.keys(companies).sort().map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
   if(companies[cur])sel.value=cur;else sel.value=''}
-function clearFilters(){document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';render()}
+function clearFilters(){document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';curPage=1;render()}
 function render(){var tb=document.getElementById('tbody'),q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
   var fCat=document.getElementById('fltCat').value,fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value;
   if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
@@ -387,8 +388,12 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
   if(sort==='recent')list=list.slice().reverse();
   if(sort==='name')list=list.slice().sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ko')});
   if(sort==='meeting')list=list.slice().sort(function(a,b){var am=a.meetings&&a.meetings.length?a.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';var bm=b.meetings&&b.meetings.length?b.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';return bm.localeCompare(am)});
-  if(!list.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';return}
-  tb.innerHTML=list.map(function(c){
+  if(!list.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';document.getElementById('pager').innerHTML='';return}
+  var total=list.length,pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(curPage>pages)curPage=pages;if(curPage<1)curPage=1;
+  var pageList=list.slice((curPage-1)*PAGE_SIZE,curPage*PAGE_SIZE);
+  renderPager(total,pages);
+  tb.innerHTML=pageList.map(function(c){
     var sel=selected[c.id]?' selected':'',chk=selected[c.id]?' checked':'';
     var lastMeet=c.meetings&&c.meetings.length?c.meetings.sort(function(a,b){return b.date.localeCompare(a.date)})[0]:null;
     var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
@@ -401,7 +406,19 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
       +'<td class="td-cpn" onclick="openDet(\''+c.id+'\',1)">'+(cpnCnt?'<span class="cpn-badge">'+cpnCnt+'회</span>':'<span style="color:var(--g400)">-</span>')+'</td>'
       +'<td><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>'}).join('');
   document.getElementById('chkAll').checked=false}
-function setF(f){curFilter=f;document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltCat').style.display=f==='all'?'':'none';var cards=document.getElementById('stats').children;for(var i=0;i<cards.length;i++){var c=cards[i];c.classList.toggle('on',i===0?f==='all':db.categories[i-1]===f)}updateFilterOptions();render()}
+function setF(f){curFilter=f;curPage=1;document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltCat').style.display=f==='all'?'':'none';var cards=document.getElementById('stats').children;for(var i=0;i<cards.length;i++){var c=cards[i];c.classList.toggle('on',i===0?f==='all':db.categories[i-1]===f)}updateFilterOptions();render()}
+function gotoPage(p){curPage=p;render();window.scrollTo({top:0,behavior:'smooth'})}
+function renderPager(total,pages){
+  var p=document.getElementById('pager');if(pages<=1){p.innerHTML='<span style="color:var(--g500)">총 '+total+'명</span>';return}
+  var s='<span style="color:var(--g500);margin-right:10px">총 '+total+'명 · '+curPage+'/'+pages+'</span>';
+  var btn=function(label,page,dis,act){return'<button onclick="gotoPage('+page+')"'+(dis?' disabled':'')+' style="min-width:32px;padding:5px 10px;border:1px solid '+(act?'var(--p)':'var(--g300)')+';background:'+(act?'var(--p)':'#fff')+';color:'+(act?'#fff':'var(--g600)')+';border-radius:6px;cursor:'+(dis?'not-allowed':'pointer')+';font-size:13px;font-weight:'+(act?'600':'400')+';opacity:'+(dis?'.4':'1')+'">'+label+'</button>'};
+  s+=btn('‹',curPage-1,curPage<=1,false);
+  var start=Math.max(1,curPage-2),end=Math.min(pages,start+4);if(end-start<4)start=Math.max(1,end-4);
+  if(start>1){s+=btn('1',1,false,curPage===1);if(start>2)s+='<span style="color:var(--g400)">…</span>'}
+  for(var i=start;i<=end;i++)s+=btn(i,i,false,i===curPage);
+  if(end<pages){if(end<pages-1)s+='<span style="color:var(--g400)">…</span>';s+=btn(pages,pages,false,curPage===pages)}
+  s+=btn('›',curPage+1,curPage>=pages,false);
+  p.innerHTML=s}
 
 // === Selection & Delete ===
 function toggleSel(id){if(selected[id])delete selected[id];else selected[id]=true;updateDelBar();render()}
