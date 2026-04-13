@@ -233,7 +233,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="fg"><label>직책</label><input type="text" id="fTi" placeholder="직책"></div></div>
 <div class="fg"><label>조직/팀</label><input type="text" id="fTm" placeholder="조직 또는 팀명"></div>
 <div id="dupWarn" style="display:none;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:14px;font-size:13px;color:var(--d)"></div>
-<div class="row2"><div class="fg"><label>연락처 (M)</label><input type="tel" id="fPh" placeholder="010-0000-0000" oninput="liveDupCheck()"></div>
+<div class="row2"><div class="fg"><label>연락처 (M)</label><input type="tel" id="fPh" placeholder="010-0000-0000" oninput="autoFmtPhone(this);liveDupCheck()"></div>
 <div class="fg"><label>연락처 (E)</label><input type="email" id="fEm" placeholder="email@company.com"></div></div>
 <div class="fg"><label>비고</label><input type="text" id="fNo" placeholder="메모"></div>
 <div id="manualQueue" style="display:none;margin-bottom:14px">
@@ -551,6 +551,7 @@ function loading(on){document.getElementById('loader').classList.toggle('on',on)
 function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+t+' on';setTimeout(function(){el.classList.remove('on')},3000)}
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function fmtPhone(p){if(!p)return'';var n=p.replace(/[^0-9]/g,'');if(n.length===11)return n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7);if(n.length===10)return n.slice(0,3)+'-'+n.slice(3,6)+'-'+n.slice(6);return p}
+function autoFmtPhone(el){var cur=el.selectionStart,raw=el.value,digits=raw.replace(/[^0-9]/g,'');if(digits.length>11)digits=digits.slice(0,11);var fmt='';if(digits.length<=3)fmt=digits;else if(digits.length<=7)fmt=digits.slice(0,3)+'-'+digits.slice(3);else if(digits.length<=11)fmt=digits.slice(0,3)+'-'+digits.slice(3,7)+'-'+digits.slice(7);if(fmt!==raw){var diff=fmt.length-raw.length;el.value=fmt;el.setSelectionRange(cur+diff,cur+diff)}}
 
 // === OCR ===
 var batchItems=[];
@@ -590,7 +591,7 @@ function renderBatch(){document.getElementById('batchList').innerHTML=batchItems
   return'<div class="batch-card"><div class="bc-head"><span class="bc-num">#'+(i+1)+'</span><button class="bc-del" onclick="removeBatch('+i+')">&times;</button></div>'
     +'<div class="bc-row"><input placeholder="기업" value="'+esc(c.company)+'" onchange="batchItems['+i+'].company=this.value"><input placeholder="성함" value="'+esc(c.name)+'" onchange="batchItems['+i+'].name=this.value"></div>'
     +'<div class="bc-row"><input placeholder="직책" value="'+esc(c.title)+'" onchange="batchItems['+i+'].title=this.value"><input placeholder="조직/팀" value="'+esc(c.team)+'" onchange="batchItems['+i+'].team=this.value"></div>'
-    +'<div class="bc-row"><input placeholder="연락처(M)" value="'+esc(c.phone)+'" onchange="batchItems['+i+'].phone=this.value"><input placeholder="이메일" value="'+esc(c.email)+'" onchange="batchItems['+i+'].email=this.value"></div></div>'}).join('')}
+    +'<div class="bc-row"><input placeholder="연락처(M)" value="'+esc(c.phone)+'" oninput="autoFmtPhone(this);batchItems['+i+'].phone=this.value" onchange="batchItems['+i+'].phone=this.value"><input placeholder="이메일" value="'+esc(c.email)+'" onchange="batchItems['+i+'].email=this.value"></div></div>'}).join('')}
 function removeBatch(i){batchItems.splice(i,1);if(!batchItems.length){closeBatch();return}document.getElementById('batchInfo').textContent=batchItems.length+'개 명함';renderBatch()}
 function closeBatch(){batchItems=[];document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';document.getElementById('ocrBox').style.display='';closeModal()}
 async function submitBatch(){var cat=document.getElementById('bCat').value;
