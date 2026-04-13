@@ -202,7 +202,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <select id="fltCompany" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
 <select id="fltCoupon" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
-<div style="margin-left:auto"><select id="sortBy" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="meeting">최근 미팅순</option></select></div>
+<div style="margin-left:auto"><select id="sortBy" onchange="render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="name">이름순</option><option value="meeting">최근 미팅순</option></select></div>
 </div>
 <div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
 <div class="tbl-wrap"><table><thead><tr>
@@ -377,6 +377,7 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
   if(q)list=list.filter(function(c){return[c.company,c.name,c.phone,c.email,c.team,c.title].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})});
   var sort=document.getElementById('sortBy').value;
   if(sort==='recent')list=list.slice().reverse();
+  if(sort==='name')list=list.slice().sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ko')});
   if(sort==='meeting')list=list.slice().sort(function(a,b){var am=a.meetings&&a.meetings.length?a.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';var bm=b.meetings&&b.meetings.length?b.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';return bm.localeCompare(am)});
   if(!list.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';return}
   tb.innerHTML=list.map(function(c){
