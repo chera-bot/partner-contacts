@@ -310,7 +310,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20;
+var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=10;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
@@ -412,12 +412,12 @@ function renderPager(total,pages){
   var p=document.getElementById('pager');if(pages<=1){p.innerHTML='<span style="color:var(--g500)">총 '+total+'명</span>';return}
   var s='<span style="color:var(--g500);margin-right:10px">총 '+total+'명 · '+curPage+'/'+pages+'</span>';
   var btn=function(label,page,dis,act){return'<button onclick="gotoPage('+page+')"'+(dis?' disabled':'')+' style="min-width:32px;padding:5px 10px;border:1px solid '+(act?'var(--p)':'var(--g300)')+';background:'+(act?'var(--p)':'#fff')+';color:'+(act?'#fff':'var(--g600)')+';border-radius:6px;cursor:'+(dis?'not-allowed':'pointer')+';font-size:13px;font-weight:'+(act?'600':'400')+';opacity:'+(dis?'.4':'1')+'">'+label+'</button>'};
-  s+=btn('‹',curPage-1,curPage<=1,false);
-  var start=Math.max(1,curPage-2),end=Math.min(pages,start+4);if(end-start<4)start=Math.max(1,end-4);
-  if(start>1){s+=btn('1',1,false,curPage===1);if(start>2)s+='<span style="color:var(--g400)">…</span>'}
+  var block=Math.floor((curPage-1)/5),start=block*5+1,end=Math.min(pages,start+4);
+  s+=btn('«',1,curPage<=1,false);
+  s+=btn('‹',start-1,start<=1,false);
   for(var i=start;i<=end;i++)s+=btn(i,i,false,i===curPage);
-  if(end<pages){if(end<pages-1)s+='<span style="color:var(--g400)">…</span>';s+=btn(pages,pages,false,curPage===pages)}
-  s+=btn('›',curPage+1,curPage>=pages,false);
+  s+=btn('›',end+1,end>=pages,false);
+  s+=btn('»',pages,curPage>=pages,false);
   p.innerHTML=s}
 
 // === Selection & Delete ===
