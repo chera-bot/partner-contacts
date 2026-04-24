@@ -310,7 +310,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20;
+var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20,_dragCat=null;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
@@ -361,8 +361,19 @@ async function refresh(){await loadData();toast('새로고침 완료','ok')}
 function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contacts.length;
   db.categories.forEach(function(c){cn[c]=0});db.contacts.forEach(function(c){cn[c.category]=(cn[c.category]||0)+1});
   var h='<div class="stat total'+(curFilter==='all'?' on':'')+'" onclick="setF(\'all\')"><div class="stat-label">전체</div><div class="stat-num">'+t+'</div></div>';
-  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')" style="border-left:3px solid '+col.fg+'"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
+  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')" style="border-left:3px solid '+col.fg+';cursor:grab" draggable="true" ondragstart="dragCatStart(event,\''+esc(c)+'\')" ondragover="dragCatOver(event)" ondrop="dragCatDrop(event,\''+esc(c)+'\')" ondragend="dragCatEnd(event)"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
   el.innerHTML=h}
+function dragCatStart(e,cat){_dragCat=cat;e.currentTarget.style.opacity='.4';e.dataTransfer.effectAllowed='move'}
+function dragCatOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.style.outline='2px dashed var(--p)'}
+function dragCatEnd(e){e.currentTarget.style.opacity='';e.currentTarget.style.outline='';_dragCat=null}
+async function dragCatDrop(e,targetCat){
+  e.preventDefault();e.currentTarget.style.outline='';
+  if(!_dragCat||_dragCat===targetCat)return;
+  var from=db.categories.indexOf(_dragCat),to=db.categories.indexOf(targetCat);
+  if(from<0||to<0)return;
+  db.categories.splice(from,1);db.categories.splice(to,0,_dragCat);
+  renderStats();updateFilterOptions();
+  try{await saveData('Reorder categories')}catch(e){toast('순서 저장 실패','er')}}
 function updateFilterOptions(){
   var catSel=document.getElementById('fltCat');var curCat=catSel.value;
   catSel.innerHTML='<option value="">구분: 전체</option>'+db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
