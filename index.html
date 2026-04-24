@@ -383,7 +383,8 @@ function initCatDrag(){
       var newOrder=Array.from(wrap.querySelectorAll('[data-cat]')).map(function(c){return c.dataset.cat});
       db.categories=newOrder;
       renderStats();updateFilterOptions();
-      try{await saveData('Reorder categories')}catch(err){toast('순서 저장 실패','er')}})}}
+      try{await saveData('Reorder categories')}catch(err){toast('순서 저장 실패','er')}
+    })})}
 function updateFilterOptions(){
   var catSel=document.getElementById('fltCat');var curCat=catSel.value;
   catSel.innerHTML='<option value="">구분: 전체</option>'+db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
