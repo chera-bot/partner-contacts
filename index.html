@@ -361,19 +361,30 @@ async function refresh(){await loadData();toast('새로고침 완료','ok')}
 function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contacts.length;
   db.categories.forEach(function(c){cn[c]=0});db.contacts.forEach(function(c){cn[c.category]=(cn[c.category]||0)+1});
   var h='<div class="stat total'+(curFilter==='all'?' on':'')+'" onclick="setF(\'all\')"><div class="stat-label">전체</div><div class="stat-num">'+t+'</div></div>';
-  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="setF(\''+esc(c)+'\')" style="border-left:3px solid '+col.fg+';cursor:grab" draggable="true" ondragstart="dragCatStart(event,\''+esc(c)+'\')" ondragover="dragCatOver(event)" ondrop="dragCatDrop(event,\''+esc(c)+'\')" ondragend="dragCatEnd(event)"><div class="stat-label">'+esc(c)+'</div><div class="stat-num">'+(cn[c]||0)+'</div></div>'});
-  el.innerHTML=h}
-function dragCatStart(e,cat){_dragCat=cat;e.currentTarget.style.opacity='.4';e.dataTransfer.effectAllowed='move'}
-function dragCatOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.style.outline='2px dashed var(--p)'}
-function dragCatEnd(e){e.currentTarget.style.opacity='';e.currentTarget.style.outline='';_dragCat=null}
-async function dragCatDrop(e,targetCat){
-  e.preventDefault();e.currentTarget.style.outline='';
-  if(!_dragCat||_dragCat===targetCat)return;
-  var from=db.categories.indexOf(_dragCat),to=db.categories.indexOf(targetCat);
-  if(from<0||to<0)return;
-  db.categories.splice(from,1);db.categories.splice(to,0,_dragCat);
-  renderStats();updateFilterOptions();
-  try{await saveData('Reorder categories')}catch(e){toast('순서 저장 실패','er')}}
+  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="if(!_wasDragged)setF(\''+esc(c)+'\');_wasDragged=false" style="border-left:3px solid '+col.fg+';cursor:grab" draggable="true" data-cat="'+esc(c)+'"><div class="stat-label" style="pointer-events:none">'+esc(c)+'</div><div class="stat-num" style="pointer-events:none">'+(cn[c]||0)+'</div></div>'});
+  el.innerHTML=h;setTimeout(initCatDrag,0)}
+function initCatDrag(){
+  var cards=document.querySelectorAll('#stats [data-cat]');
+  cards.forEach(function(el){
+    el.addEventListener('dragstart',function(e){
+      _dragCat=el.dataset.cat;_wasDragged=false;
+      e.dataTransfer.setData('text/plain',_dragCat);
+      e.dataTransfer.effectAllowed='move';
+      setTimeout(function(){el.style.opacity='.4'},0)});
+    el.addEventListener('dragend',function(){
+      el.style.opacity='';el.style.outline='';_wasDragged=true});
+    el.addEventListener('dragover',function(e){e.preventDefault();el.style.outline='2px dashed var(--p)'});
+    el.addEventListener('dragleave',function(){el.style.outline=''});
+    el.addEventListener('drop',async function(e){
+      e.preventDefault();el.style.outline='';
+      var src=e.dataTransfer.getData('text/plain');
+      var tgt=el.dataset.cat;
+      if(!src||src===tgt)return;
+      var from=db.categories.indexOf(src),to=db.categories.indexOf(tgt);
+      if(from<0||to<0)return;
+      db.categories.splice(from,1);db.categories.splice(to,0,src);
+      renderStats();updateFilterOptions();
+      try{await saveData('Reorder categories')}catch(err){toast('순서 저장 실패','er')}})}}
 function updateFilterOptions(){
   var catSel=document.getElementById('fltCat');var curCat=catSel.value;
   catSel.innerHTML='<option value="">구분: 전체</option>'+db.categories.map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
