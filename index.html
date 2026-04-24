@@ -364,25 +364,24 @@ function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contac
   db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="if(!_wasDragged)setF(\''+esc(c)+'\');_wasDragged=false" style="border-left:3px solid '+col.fg+';cursor:grab" draggable="true" data-cat="'+esc(c)+'"><div class="stat-label" style="pointer-events:none">'+esc(c)+'</div><div class="stat-num" style="pointer-events:none">'+(cn[c]||0)+'</div></div>'});
   el.innerHTML=h;setTimeout(initCatDrag,0)}
 function initCatDrag(){
-  var cards=document.querySelectorAll('#stats [data-cat]');
-  cards.forEach(function(el){
+  var wrap=document.getElementById('stats');
+  wrap.querySelectorAll('[data-cat]').forEach(function(el){
     el.addEventListener('dragstart',function(e){
       _dragCat=el.dataset.cat;_wasDragged=false;
       e.dataTransfer.setData('text/plain',_dragCat);
       e.dataTransfer.effectAllowed='move';
-      setTimeout(function(){el.style.opacity='.4'},0)});
+      setTimeout(function(){el.style.opacity='.35';el.style.transform='scale(.97)'},0)});
     el.addEventListener('dragend',function(){
-      el.style.opacity='';el.style.outline='';_wasDragged=true});
-    el.addEventListener('dragover',function(e){e.preventDefault();el.style.outline='2px dashed var(--p)'});
-    el.addEventListener('dragleave',function(){el.style.outline=''});
+      el.style.opacity='';el.style.transform='';_wasDragged=true});
+    el.addEventListener('dragover',function(e){
+      e.preventDefault();if(!_dragCat||el.dataset.cat===_dragCat)return;
+      var dragging=wrap.querySelector('[data-cat="'+_dragCat+'"]');if(!dragging)return;
+      var mid=el.getBoundingClientRect().left+el.getBoundingClientRect().width/2;
+      wrap.insertBefore(dragging,e.clientX<mid?el:el.nextSibling)});
     el.addEventListener('drop',async function(e){
-      e.preventDefault();el.style.outline='';
-      var src=e.dataTransfer.getData('text/plain');
-      var tgt=el.dataset.cat;
-      if(!src||src===tgt)return;
-      var from=db.categories.indexOf(src),to=db.categories.indexOf(tgt);
-      if(from<0||to<0)return;
-      db.categories.splice(from,1);db.categories.splice(to,0,src);
+      e.preventDefault();
+      var newOrder=Array.from(wrap.querySelectorAll('[data-cat]')).map(function(c){return c.dataset.cat});
+      db.categories=newOrder;
       renderStats();updateFilterOptions();
       try{await saveData('Reorder categories')}catch(err){toast('순서 저장 실패','er')}})}}
 function updateFilterOptions(){
