@@ -28,6 +28,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn{padding:10px 20px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
 .btn-p{background:var(--p);color:#fff}.btn-p:hover{background:var(--ph)}
 .btn-o{background:#fff;color:var(--g600);border:1px solid var(--g300)}.btn-o:hover{background:var(--g50)}
+.tb-sep{width:1px;height:22px;background:var(--g200);margin:0 2px}
+.btn-pl{background:var(--pl);color:var(--ph)}.btn-pl:hover{background:#bfdbfe}
 .btn-d{background:var(--d);color:#fff}.btn-d:hover{background:#b91c1c}
 .btn-s{padding:7px 14px;font-size:13px}
 .main{padding:24px 32px;flex:1;max-width:1400px;width:100%;margin:0 auto}
@@ -78,6 +80,10 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 .modal-head{padding:22px 26px 0;display:flex;justify-content:space-between;align-items:center}.modal-head h2{font-size:17px}
 .modal-x{width:30px;height:30px;border-radius:8px;border:none;background:var(--g100);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--g500)}.modal-x:hover{background:var(--g200)}
 .modal-body{padding:20px 26px 26px}
+.modal.wide{width:700px}
+.rtabs{display:flex;border-bottom:2px solid var(--g200);padding:0 26px;margin-top:14px}
+.rtab{padding:10px 18px;font-size:14px;font-weight:500;color:var(--g500);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.rtab.on{color:var(--p);border-bottom-color:var(--p)}.rtab:hover{color:var(--p)}
 .fg{margin-bottom:14px}.fg label{display:block;font-size:12px;font-weight:600;color:var(--g600);margin-bottom:4px}.fg .req{color:var(--d)}
 .fg input,.fg select{width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:14px;outline:none}
 .fg input:focus,.fg select:focus{border-color:var(--p)}
@@ -176,11 +182,14 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 .toast{max-width:min(460px,calc(100vw - 40px));line-height:1.45}
 
 /* Mailing Groups */
-.mg-chip{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;background:#fff;border:1px solid var(--g300);color:var(--g700);margin-right:3px;white-space:nowrap}
-.mg-chip.more{background:var(--g100);border-color:var(--g200);color:var(--g500)}
+.mg-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:10px;font-size:10px;font-weight:600;border:1px solid;margin-right:3px;white-space:nowrap}
+.mg-chip i,.mg-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block}
+.mg-chip.more{background:var(--g100);border-color:var(--g200);color:var(--g500);padding:2px 7px}
+.mg-dot.lg{width:12px;height:12px}
+.cat-dl{padding:4px 9px;font-size:11px;border-radius:6px;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;cursor:pointer;flex-shrink:0;font-weight:500}.cat-dl:hover{background:#dcfce7}
 .mg-empty{color:var(--g400);font-size:11px}
 .td-mg{cursor:pointer;white-space:nowrap}
-.td-mg:hover .mg-chip{border-color:var(--p);color:var(--p)}.td-mg:hover .mg-empty{color:var(--p)}
+.td-mg:hover .mg-chip{filter:brightness(.96)}.td-mg:hover .mg-empty{color:var(--p)}
 .td-act{text-align:right;white-space:nowrap}.td-act .btn-edit+.btn-edit{margin-left:4px}
 .pop{position:absolute;z-index:120;background:#fff;border:1px solid var(--g200);border-radius:var(--rs);box-shadow:0 10px 30px rgba(0,0,0,.12);padding:6px;min-width:210px;max-width:280px;display:none}
 .pop.on{display:block}
@@ -196,6 +205,9 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 .det-grid dt{color:var(--g500);font-size:12px}.det-grid dd{color:var(--g800);word-break:break-all}
 .det-grid a{color:var(--g700);text-decoration:none}.det-grid a:hover{color:var(--p)}
 .mgd-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cat-name.link{cursor:pointer}.cat-name.link:hover{color:var(--p);text-decoration:underline}
+.xl-preview td.td-chk,.xl-preview th.th-chk{width:34px;text-align:center}.xl-preview .td-chk input,.xl-preview .th-chk input{width:15px;height:15px;accent-color:var(--p);cursor:pointer}
+#mgdBody td.wrap{white-space:normal;min-width:120px}
 .mgd-sum{font-size:13px;color:var(--g600)}.mgd-sum b{color:var(--p)}
 @media(max-width:768px){.topbar{padding:12px 16px;flex-wrap:wrap;gap:10px}.topbar h1{font-size:16px;width:100%}.main{padding:16px}
 .stats{grid-template-columns:repeat(3,1fr);gap:6px}.stat{padding:10px 12px}.stat-num{font-size:20px}.tbl-wrap{overflow-x:auto}table{min-width:900px}.row2{flex-direction:column;gap:0}.detail{width:95vw}}
@@ -213,12 +225,11 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div id="dashboard">
 <div class="topbar"><h1>팀 명함첩</h1>
 <div class="topbar-btns">
-<button class="btn btn-p" onclick="openModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>신규 연락처 등록</button>
-<button class="btn btn-o" onclick="openXL()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>파일 업로드</button>
 <button class="btn btn-o btn-s" onclick="openCatMgr()">구분 관리</button>
-<button class="btn btn-o btn-s" onclick="openMgMgr()">메일링 그룹</button>
 <button class="btn btn-o btn-s" onclick="refresh()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>새로고침</button>
-<button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
+<button class="btn btn-pl" onclick="openMgMgr()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>메일링 그룹</button>
+<button class="btn btn-p" onclick="openModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>신규 연락처 등록</button>
+<span class="tb-sep"></span><button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
 <div class="main">
 <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 <input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="curPage=1;render()"></div>
@@ -245,9 +256,10 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div id="pager" style="display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 0;font-size:13px"></div></div></div>
 
 <!-- ADD/EDIT MODAL -->
-<div class="overlay" id="ov"><div class="modal">
+<div class="overlay" id="ov"><div class="modal" id="regModal">
 <div class="modal-head"><h2 id="modalTitle">신규 연락처 등록</h2><button class="modal-x" onclick="closeModal()">&times;</button></div>
-<div class="modal-body">
+<div class="rtabs" id="regTabs"><div class="rtab on" id="regTab0" onclick="regTab(0)">직접 입력</div><div class="rtab" id="regTab1" onclick="regTab(1)">파일 업로드</div></div>
+<div class="modal-body" id="regDirect">
 <div class="ocr-box" id="ocrBox" onclick="document.getElementById('ocrFile').click()">
 <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
 <div class="ocr-title">명함 촬영 / 업로드</div><p>명함 사진을 찍거나 선택하면 자동으로 인식합니다</p></div>
@@ -278,7 +290,28 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-o" id="addMoreBtn" onclick="addToQueue()" style="flex:1;border-color:var(--p);color:var(--p)">+ 한 명 더</button>
 <button class="btn btn-p" id="subBtn" onclick="submit()" style="flex:1">등록</button>
 </div>
-</div></div></div></div>
+</div></div>
+<div class="modal-body" id="regFile" style="display:none">
+<div id="xlStep1">
+<div class="xl-drop" id="xlDrop" onclick="document.getElementById('xlFile').click()">
+<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+<div class="xl-title">파일을 드래그하거나 클릭하여 선택</div>
+<p>.xlsx, .xls, .csv 지원</p></div>
+<input type="file" id="xlFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXLFile(this)">
+</div>
+<div id="xlStep2" style="display:none">
+<div class="xl-info" id="xlFileInfo"></div>
+<div class="fg"><label>시트 선택</label><select id="xlSheet" onchange="xlSheetChanged()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:14px;outline:none"></select></div>
+<div class="xl-map" id="xlMapArea">
+<div class="xl-map-title">컬럼 매핑</div>
+<div id="xlMapRows"></div></div>
+<div class="fg"><label>구분 (카테고리) <span class="req">*</span></label><select id="xlCat"></select></div>
+<div id="xlPreviewWrap" style="display:none">
+<div style="font-size:13px;font-weight:600;color:var(--g600);margin-bottom:8px">미리보기 <span id="xlPreviewCount" style="color:var(--p)"></span></div>
+<div class="xl-preview"><table><thead id="xlPHead"></thead><tbody id="xlPBody"></tbody></table></div></div>
+<div class="modal-btns"><button class="btn btn-o" onclick="resetXL()">다른 파일</button><button class="btn btn-p" id="xlSubBtn" onclick="submitXL()">가져오기</button></div>
+</div>
+</div></div></div>
 
 <!-- DETAIL PANEL -->
 <div class="overlay" id="detOv"><div class="modal detail">
@@ -306,36 +339,14 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-p btn-s" onclick="addCpn()" style="width:100%;justify-content:center;margin-top:8px">추가</button></div></div>
 </div></div>
 
-<!-- EXCEL IMPORT MODAL -->
-<div class="overlay" id="xlOv"><div class="modal" style="width:700px">
-<div class="modal-head"><h2 id="xlTitle">파일 업로드</h2><button class="modal-x" onclick="closeXL()">&times;</button></div>
-<div class="modal-body">
-<div id="xlStep1">
-<div class="xl-drop" id="xlDrop" onclick="document.getElementById('xlFile').click()">
-<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
-<div class="xl-title">파일을 드래그하거나 클릭하여 선택</div>
-<p>.xlsx, .xls, .csv 지원</p></div>
-<input type="file" id="xlFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXLFile(this)">
-</div>
-<div id="xlStep2" style="display:none">
-<div class="xl-info" id="xlFileInfo"></div>
-<div class="fg"><label>시트 선택</label><select id="xlSheet" onchange="xlSheetChanged()" style="width:100%;padding:9px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:14px;outline:none"></select></div>
-<div class="xl-map" id="xlMapArea">
-<div class="xl-map-title">컬럼 매핑</div>
-<div id="xlMapRows"></div></div>
-<div class="fg"><label>구분 (카테고리) <span class="req">*</span></label><select id="xlCat"></select></div>
-<div id="xlPreviewWrap" style="display:none">
-<div style="font-size:13px;font-weight:600;color:var(--g600);margin-bottom:8px">미리보기 <span id="xlPreviewCount" style="color:var(--p)"></span></div>
-<div class="xl-preview"><table><thead id="xlPHead"></thead><tbody id="xlPBody"></tbody></table></div></div>
-<div class="modal-btns"><button class="btn btn-o" onclick="resetXL()">다른 파일</button><button class="btn btn-p" id="xlSubBtn" onclick="submitXL()">가져오기</button></div>
-</div>
-</div></div></div>
-
 <!-- CATEGORY MANAGEMENT MODAL -->
 <div class="overlay" id="catOv"><div class="modal">
 <div class="modal-head"><h2>구분 관리</h2><button class="modal-x" onclick="closeCatMgr()">&times;</button></div>
 <div class="modal-body"><div id="catMgrList"></div>
-<button class="btn btn-o" onclick="closeCatMgr()" style="width:100%;justify-content:center;margin-top:12px">닫기</button>
+<div id="catNewWrap" class="cat-item" style="display:none"><input type="text" id="catNewName" placeholder="새 구분 이름 (예: Legal)" style="flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onkeydown="if(event.key==='Enter')createCat();if(event.key==='Escape')cancelNewCat()">
+<button class="btn btn-p btn-s" onclick="createCat()">추가</button><button class="btn btn-o btn-s" onclick="cancelNewCat()">취소</button></div>
+<button class="btn btn-o" id="catNewBtn" onclick="startNewCat()" style="width:100%;justify-content:center;margin-top:4px;border-style:dashed;color:var(--p)">+ 새 구분 추가</button>
+<button class="btn btn-o" onclick="closeCatMgr()" style="width:100%;justify-content:center;margin-top:8px">닫기</button>
 </div></div></div>
 
 <!-- MAILING GROUP MANAGEMENT MODAL -->
@@ -354,11 +365,11 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="modal-head"><h2 id="mgdTitle"></h2><button class="modal-x" onclick="closeMgDet()">&times;</button></div>
 <div class="modal-body">
 <div class="mgd-head"><div class="mgd-sum" id="mgdSum"></div>
-<div style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-o btn-s" onclick="mgdCopy()">이메일 복사</button><button class="btn btn-p btn-s" onclick="mgdExport()">엑셀 다운로드</button></div></div>
+<div style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-d btn-s" id="mgdBulk" style="display:none" onclick="mgdRemoveSelected()"></button><button class="btn btn-o btn-s" onclick="mgdCopy()">이메일 복사</button><button class="btn btn-p btn-s" onclick="mgdExport()">엑셀 다운로드</button></div></div>
 <div class="search" style="margin-bottom:12px"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 <input type="text" id="mgdQ" placeholder="이름, 기업, 이메일로 검색..." oninput="renderMgDet()"></div>
-<div class="xl-preview" style="max-height:50vh"><table><thead><tr><th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>이메일</th><th></th></tr></thead><tbody id="mgdBody"></tbody></table></div>
-<div class="modal-btns" style="margin-top:4px"><button class="btn btn-o" onclick="backToMgMgr()">← 그룹 목록</button><button class="btn btn-o" onclick="closeMgDet()">닫기</button></div>
+<div class="xl-preview" style="max-height:50vh"><table><thead id="mgdHead"></thead><tbody id="mgdBody"></tbody></table></div>
+<div class="modal-btns" style="margin-top:4px"><button class="btn btn-o" onclick="closeMgDet()">닫기</button></div>
 </div></div></div>
 
 <div class="pop" id="mgPop"></div>
@@ -542,9 +553,12 @@ function openModal(id){editId=id||null;manualQ=[];var isE=!!editId;
   else{['fCo','fNm','fTi','fTm','fPh','fEm','fNo','fNewCat'].forEach(function(x){document.getElementById(x).value=''});
     if(curFilter!=='all')sel.value=curFilter}
   document.getElementById('subBtn').disabled=false;clearOCR();batchItems=[];document.getElementById('batchWrap').classList.remove('on');document.getElementById('singleForm').style.display='';
-  renderManualQ();document.getElementById('ov').classList.add('on')}
+  renderManualQ();document.getElementById('regTabs').style.display=isE?'none':'';regTab(0);document.getElementById('ov').classList.add('on')}
 function editContact(id){openModal(id)}
-function closeModal(){document.getElementById('ov').classList.remove('on');editId=null;manualQ=[]}
+function closeModal(){document.getElementById('ov').classList.remove('on');editId=null;manualQ=[];xlWorkbook=null;xlRows=[];xlHeaders=[]}
+function regTab(n){document.getElementById('regTab0').classList.toggle('on',n===0);document.getElementById('regTab1').classList.toggle('on',n===1);
+  document.getElementById('regDirect').style.display=n===0?'':'none';document.getElementById('regFile').style.display=n===1?'':'none';
+  document.getElementById('regModal').classList.toggle('wide',n===1);if(n===1)resetXL()}
 function toggleNew(){var on=document.getElementById('fNewChk').checked;document.getElementById('fNewWrap').classList.toggle('on',on);document.getElementById('fCat').disabled=on}
 function getFormData(){var isNew=document.getElementById('fNewChk').checked;
   var cat=isNew?document.getElementById('fNewCat').value.trim():document.getElementById('fCat').value;
@@ -621,7 +635,7 @@ function renderDetInfo(){var c=db.contacts.find(function(x){return x.id===detCon
 function renderDetGroups(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;var el=document.getElementById('detGroups');
   if(!db.mailingGroups.length){el.innerHTML='<span style="font-size:12px;color:var(--g400)">메일링 그룹이 없습니다. 우상단 [메일링 그룹]에서 만들 수 있어요.</span>';return}
   var g=mgOf(c);el.innerHTML=db.mailingGroups.map(function(name,i){var on=g.indexOf(name)>=0;
-    return'<button class="preset'+(on?' on':'')+'" onclick="toggleContactGroup(\''+c.id+'\','+i+','+(!on)+')">'+(on?'✓ ':'')+esc(name)+'</button>'}).join('')}
+    var col=mgColor(name),st=on?' style="background:'+col.bg+';border-color:'+col.dot+';color:'+col.fg+'"':'';return'<button class="preset"'+st+' onclick="toggleContactGroup(\''+c.id+'\','+i+','+(!on)+')">'+(on?'✓ ':'')+esc(name)+'</button>'}).join('')}
 function renderDetTabs(c){var cnt=(c.coupons||[]).reduce(function(s,x){return s+(x.qty||1)},0);
   document.getElementById('detTabMeet').textContent='미팅 이력 ('+(c.meetings||[]).length+')';
   document.getElementById('detTabCpn').textContent='쿠폰 이력 ('+cnt+'회)'}
@@ -758,16 +772,26 @@ function fillForm(p){['Co','Nm','Ti','Tm','Ph','Em'].forEach(function(k,i){var k
   if(p[keys[i]])document.getElementById('f'+k).value=p[keys[i]]});toast('명함 인식 완료 - 내용을 확인해주세요','ok')}
 
 // === Category Management ===
-function openCatMgr(){renderCatMgr();document.getElementById('catOv').classList.add('on')}
+function openCatMgr(){cancelNewCat();renderCatMgr();document.getElementById('catOv').classList.add('on')}
 function closeCatMgr(){document.getElementById('catOv').classList.remove('on');renderStats();updateFilterOptions();render()}
 function renderCatMgr(){var el=document.getElementById('catMgrList');
   el.innerHTML=db.categories.map(function(cat,i){var cnt=db.contacts.filter(function(c){return c.category===cat}).length;var col=CAT_COLORS[i%CAT_COLORS.length];
     return'<div class="cat-item" id="ci'+i+'"><div class="cat-dot" style="background:'+col.fg+'"></div>'
-      +'<div class="cat-name" id="cn'+i+'">'+esc(cat)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+      +'<div class="cat-name link" id="cn'+i+'" onclick="openCatDet('+i+')" title="눌러서 연락처 보기">'+esc(cat)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+      +'<button class="cat-dl" onclick="exportContacts(db.contacts.filter(function(c){return c.category===db.categories['+i+']}))">엑셀 다운로드</button>'
       +'<div class="cat-actions"><button class="cat-btn" onclick="editCatName('+i+')" title="이름 수정"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>'
       +'<button class="cat-btn cdel" onclick="delCatStart('+i+')" title="삭제">&times;</button></div></div>'}).join('')}
+function startNewCat(){document.getElementById('catNewWrap').style.display='flex';document.getElementById('catNewBtn').style.display='none';
+  var inp=document.getElementById('catNewName');inp.value='';inp.focus()}
+function cancelNewCat(){document.getElementById('catNewWrap').style.display='none';document.getElementById('catNewBtn').style.display=''}
+async function createCat(){var v=document.getElementById('catNewName').value.trim();
+  if(!v){toast('구분 이름을 입력하세요','er');return}
+  if(db.categories.indexOf(v)>=0){toast('이미 존재하는 구분입니다','er');return}
+  db.categories.push(v);cancelNewCat();renderCatMgr();renderStats();updateFilterOptions();
+  try{var r=await saveData('Add category: '+v);if(r&&r.content){toast('\''+v+'\' 구분을 추가했습니다','ok');return}}catch(e){}
+  toast('저장 실패 – 최신 데이터를 다시 불러옵니다','er',5000);await loadData();if(isOn('catOv'))renderCatMgr()}
 function editCatName(i){var el=document.getElementById('cn'+i);var old=db.categories[i];
-  el.innerHTML='<input type="text" value="'+esc(old)+'" style="width:100%;padding:5px 8px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onkeydown="if(event.key===\'Enter\')saveCatName('+i+',this.value);if(event.key===\'Escape\')renderCatMgr()" onblur="saveCatName('+i+',this.value)">';
+  el.innerHTML='<input type="text" onclick="event.stopPropagation()" value="'+esc(old)+'" style="width:100%;padding:5px 8px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onkeydown="if(event.key===\'Enter\')saveCatName('+i+',this.value);if(event.key===\'Escape\')renderCatMgr()" onblur="saveCatName('+i+',this.value)">';
   el.querySelector('input').focus();el.querySelector('input').select()}
 async function saveCatName(i,nv){nv=(nv||'').trim();var old=db.categories[i];
   if(!nv||nv===old){renderCatMgr();return}
@@ -793,11 +817,16 @@ async function delCatConfirm(i,moveTo){var cat=db.categories[i];
 
 // === Mailing Groups ===
 // db.mailingGroups holds group names; each contact.mailingGroups holds the names it belongs to.
+var MG_COLORS=[{bg:'#eaf6f2',bd:'#c6e6da',fg:'#2f6b5a',dot:'#6fbfa3'},{bg:'#fdf0e8',bd:'#f5d5c2',fg:'#8f5536',dot:'#eaa27b'},{bg:'#eff0fb',bd:'#d5d8f3',fg:'#4a539a',dot:'#949de0'},
+  {bg:'#fbeff4',bd:'#f1d1df',fg:'#8c4566',dot:'#e094b5'},{bg:'#f2f7e6',bd:'#d9e8bd',fg:'#56692a',dot:'#a9c76d'},{bg:'#eaf4fb',bd:'#c9e2f2',fg:'#386987',dot:'#7fb5d8'},
+  {bg:'#f5effa',bd:'#e0d2ee',fg:'#6c4a8c',dot:'#b493d6'},{bg:'#fbf6e5',bd:'#efe2b6',fg:'#7d6420',dot:'#d9bd5f'}];
+function mgColor(name){var i=db.mailingGroups.indexOf(name);if(i<0)i=0;return MG_COLORS[i%MG_COLORS.length]}
+function mgChip(n){var c=mgColor(n);return'<span class="mg-chip" style="background:'+c.bg+';border-color:'+c.bd+';color:'+c.fg+'"><i style="background:'+c.dot+'"></i>'+esc(n)+'</span>'}
 function mgOf(c){return c&&Array.isArray(c.mailingGroups)?c.mailingGroups:[]}
 function mgSorted(c){var g=mgOf(c),order=db.mailingGroups;return g.slice().sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return(ia<0?1e9:ia)-(ib<0?1e9:ib)})}
 function setGroup(c,name,on){var g=mgOf(c).slice(),i=g.indexOf(name);if(on&&i<0)g.push(name);if(!on&&i>=0)g.splice(i,1);c.mailingGroups=g;return on?i<0:i>=0}
 function mgChips(g){if(!g.length)return'<span class="mg-empty">-</span>';var show=g.length<=2?g:g.slice(0,1);
-  return show.map(function(n){return'<span class="mg-chip">'+esc(n)+'</span>'}).join('')+(g.length>show.length?'<span class="mg-chip more">+'+(g.length-show.length)+'</span>':'')}
+  return show.map(mgChip).join('')+(g.length>show.length?'<span class="mg-chip more">+'+(g.length-show.length)+'</span>':'')}
 function mgMembers(name){return db.contacts.filter(function(c){return mgOf(c).indexOf(name)>=0})}
 function isOn(id){return document.getElementById(id).classList.contains('on')}
 function refreshMgViews(){renderStats();updateFilterOptions();render();
@@ -820,7 +849,7 @@ function showPop(anchor,html){var p=document.getElementById('mgPop');p.innerHTML
 function rowPopHtml(id){var c=db.contacts.find(function(x){return x.id===id});if(!c)return'';
   if(!db.mailingGroups.length)return'<div class="pop-empty">메일링 그룹이 없습니다.<br>우상단 [메일링 그룹]에서 만들어 주세요.</div>';
   var g=mgOf(c);return'<div class="pop-title">메일링 그룹 · '+esc(c.name)+'</div>'+db.mailingGroups.map(function(name,i){
-    return'<label class="pop-item"><input type="checkbox"'+(g.indexOf(name)>=0?' checked':'')+' onchange="toggleContactGroup(\''+id+'\','+i+',this.checked)">'+esc(name)+'</label>'}).join('')}
+    return'<label class="pop-item"><input type="checkbox"'+(g.indexOf(name)>=0?' checked':'')+' onchange="toggleContactGroup(\''+id+'\','+i+',this.checked)"><span class="mg-dot" style="background:'+mgColor(name).dot+'"></span>'+esc(name)+'</label>'}).join('')}
 function openRowPop(e,id){e.stopPropagation();if(_pop.mode==='row'&&_pop.id===id){closePop();return}
   _pop={mode:'row',id:id};showPop(e.currentTarget,rowPopHtml(id))}
 async function toggleContactGroup(id,gi,on){var c=db.contacts.find(function(x){return x.id===id}),name=db.mailingGroups[gi];if(!c||name==null)return;
@@ -830,7 +859,7 @@ function bulkPopHtml(mode){var ids=Object.keys(selected),n=ids.length;
   if(!db.mailingGroups.length)return'<div class="pop-empty">메일링 그룹이 없습니다.<br>우상단 [메일링 그룹]에서 만들어 주세요.</div>';
   return'<div class="pop-title">선택한 '+n+'명을 '+(mode==='add'?'그룹에 추가':'그룹에서 제외')+'</div>'+db.mailingGroups.map(function(name,i){
     var inG=ids.filter(function(id){var c=db.contacts.find(function(x){return x.id===id});return mgOf(c).indexOf(name)>=0}).length;
-    return'<button class="pop-item" onclick="applyBulk(\''+mode+'\','+i+')">'+esc(name)+'<span class="pop-cnt">'+(mode==='add'?'이미 '+inG+'명':inG+'명 포함')+'</span></button>'}).join('')}
+    return'<button class="pop-item" onclick="applyBulk(\''+mode+'\','+i+')"><span class="mg-dot" style="background:'+mgColor(name).dot+'"></span>'+esc(name)+'<span class="pop-cnt">'+(mode==='add'?'이미 '+inG+'명':inG+'명 포함')+'</span></button>'}).join('')}
 function openBulkPop(e,mode){e.stopPropagation();if(_pop.mode===mode){closePop();return}_pop={mode:mode,id:null};showPop(e.currentTarget,bulkPopHtml(mode))}
 async function applyBulk(mode,gi){var name=db.mailingGroups[gi];closePop();if(name==null)return;var add=mode==='add',changed=0;
   db.contacts.forEach(function(c){if(selected[c.id]&&setGroup(c,name,add))changed++});
@@ -867,7 +896,8 @@ function closeMgMgr(){document.getElementById('mgOv').classList.remove('on')}
 function renderMgMgr(){var el=document.getElementById('mgList');
   if(!db.mailingGroups.length){el.innerHTML='<div class="det-empty">메일링 그룹이 없습니다</div>';return}
   el.innerHTML=db.mailingGroups.map(function(g,i){var cnt=mgMembers(g).length;
-    return'<div class="cat-item" style="cursor:pointer" onclick="openMgDet('+i+')"><div class="cat-name" id="mgn'+i+'">'+esc(g)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+    return'<div class="cat-item" style="cursor:pointer" onclick="openMgDet('+i+')" title="눌러서 포함된 연락처 보기"><span class="mg-dot lg" style="background:'+mgColor(g).dot+'"></span><div class="cat-name" id="mgn'+i+'">'+esc(g)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+      +'<button class="cat-dl" onclick="event.stopPropagation();exportContacts(mgMembers(db.mailingGroups['+i+']))">엑셀 다운로드</button>'
       +'<div class="cat-actions"><button class="cat-btn" onclick="event.stopPropagation();editMgName('+i+')" title="이름 변경"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>'
       +'<button class="cat-btn cdel" onclick="event.stopPropagation();delMg('+i+')" title="삭제">&times;</button></div></div>'}).join('')}
 function startNewGroup(){document.getElementById('mgNewWrap').style.display='flex';document.getElementById('mgNewBtn').style.display='none';
@@ -891,31 +921,48 @@ async function saveMgName(i,nv){var old=db.mailingGroups[i];nv=(nv==null?old:nv)
 async function delMg(i){var name=db.mailingGroups[i];if(name==null)return;
   if(!confirm('\''+name+'\' 그룹을 삭제하시겠습니까?\n해당 그룹에 포함된 연락처 자체는 삭제되지 않으며 그룹 지정만 해제됩니다.'))return;
   db.mailingGroups.splice(i,1);db.contacts.forEach(function(c){setGroup(c,name,false)});
-  if(mgdIdx===i)closeMgDet();else if(mgdIdx>i)mgdIdx--;
+  if(mgdMode==='mg'){if(mgdIdx===i)closeMgDet();else if(mgdIdx>i)mgdIdx--}
   refreshMgViews();
   if(await saveGroups('Delete mailing group: '+name))toast('\''+name+'\' 그룹을 삭제했습니다 (연락처는 유지)','ok')}
 
-// Group detail modal
-var mgdIdx=-1;
-function openMgDet(i){mgdIdx=i;document.getElementById('mgdQ').value='';closeMgMgr();renderMgDet();document.getElementById('mgDetOv').classList.add('on')}
-function closeMgDet(){document.getElementById('mgDetOv').classList.remove('on');mgdIdx=-1}
-function backToMgMgr(){closeMgDet();openMgMgr()}
-function renderMgDet(){var name=db.mailingGroups[mgdIdx];if(name==null){closeMgDet();return}
-  var all=mgMembers(name),withEmail=all.filter(function(c){return(c.email||'').trim()}).length;
-  document.getElementById('mgdTitle').textContent=name;
+// List detail modal — shared by mailing groups (mode 'mg') and categories (mode 'cat'); opens on top of its manager
+var mgdIdx=-1,mgdMode='mg',mgdSel={};
+function detName(){return mgdMode==='cat'?db.categories[mgdIdx]:db.mailingGroups[mgdIdx]}
+function detMembers(){var n=detName();if(n==null)return[];return mgdMode==='cat'?db.contacts.filter(function(c){return c.category===n}):mgMembers(n)}
+function openMgDet(i){openListDet('mg',i)}
+function openCatDet(i){openListDet('cat',i)}
+function openListDet(mode,i){mgdMode=mode;mgdIdx=i;mgdSel={};document.getElementById('mgdQ').value='';renderMgDet();document.getElementById('mgDetOv').classList.add('on')}
+function closeMgDet(){document.getElementById('mgDetOv').classList.remove('on');mgdIdx=-1;mgdSel={};if(isOn('mgOv'))renderMgMgr();if(isOn('catOv'))renderCatMgr()}
+function mgdVisible(){var all=detMembers(),q=(document.getElementById('mgdQ').value||'').toLowerCase();
+  return q?all.filter(function(c){return[c.company,c.name,c.email,c.team,c.title,c.category].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})}):all}
+function renderMgDet(){var name=detName();if(name==null){closeMgDet();return}var isMg=mgdMode==='mg';
+  var all=detMembers(),withEmail=all.filter(function(c){return(c.email||'').trim()}).length;
+  Object.keys(mgdSel).forEach(function(id){if(!all.some(function(c){return c.id===id}))delete mgdSel[id]});
+  document.getElementById('mgdTitle').innerHTML=(isMg?'<span class="mg-dot lg" style="background:'+mgColor(name).dot+';margin-right:8px;vertical-align:1px"></span>':'<span style="font-size:12px;color:var(--g500);font-weight:500;margin-right:8px">구분</span>')+esc(name);
   document.getElementById('mgdSum').innerHTML='총 <b>'+all.length+'명</b> / 이메일 보유 <b>'+withEmail+'명</b>';
-  var q=(document.getElementById('mgdQ').value||'').toLowerCase();
-  var list=q?all.filter(function(c){return[c.company,c.name,c.email,c.team,c.title,c.category].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})}):all;
+  var nSel=Object.keys(mgdSel).length,bulk=document.getElementById('mgdBulk');bulk.style.display=isMg&&nSel?'':'none';bulk.textContent='선택 '+nSel+'명 그룹에서 제외';
+  var list=mgdVisible(),q=document.getElementById('mgdQ').value;
+  document.getElementById('mgdHead').innerHTML='<tr>'+(isMg?'<th class="th-chk"><input type="checkbox"'+(list.length&&list.every(function(c){return mgdSel[c.id]})?' checked':'')+' onchange="mgdToggleAll(this.checked)"></th>':'')
+    +'<th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>이메일</th>'+(isMg?'<th></th>':'')+'</tr>';
+  var cols=isMg?8:6;
   document.getElementById('mgdBody').innerHTML=list.length?list.map(function(c){
-    return'<tr><td>'+badgeHtml(c.category)+'</td><td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
+    return'<tr>'+(isMg?'<td class="td-chk"><input type="checkbox"'+(mgdSel[c.id]?' checked':'')+' onchange="mgdToggle(\''+c.id+'\')"></td>':'')
+      +'<td>'+badgeHtml(c.category)+'</td><td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td class="wrap">'+esc(c.team)+'</td>'
       +'<td class="mono">'+(c.email?esc(c.email):'<span style="color:var(--g400)">없음</span>')+'</td>'
-      +'<td style="text-align:right"><button class="btn-edit" onclick="mgdRemove(\''+c.id+'\')">제외</button></td></tr>'}).join('')
-    :'<tr><td colspan="7"><div class="det-empty">'+(q?'검색 결과가 없습니다':'이 그룹에 포함된 연락처가 없습니다')+'</div></td></tr>'}
-async function mgdRemove(id){var name=db.mailingGroups[mgdIdx],c=db.contacts.find(function(x){return x.id===id});if(name==null||!c)return;
-  if(!setGroup(c,name,false))return;refreshMgViews();
+      +(isMg?'<td style="text-align:right"><button class="btn-edit" title="이 그룹에서만 제외 (연락처는 유지)" onclick="mgdRemove(\''+c.id+'\')">제외</button></td>':'')+'</tr>'}).join('')
+    :'<tr><td colspan="'+cols+'"><div class="det-empty">'+(q?'검색 결과가 없습니다':(isMg?'이 그룹에 포함된 연락처가 없습니다':'이 구분에 등록된 연락처가 없습니다'))+'</div></td></tr>'}
+function mgdToggle(id){if(mgdSel[id])delete mgdSel[id];else mgdSel[id]=true;renderMgDet()}
+function mgdToggleAll(on){mgdVisible().forEach(function(c){if(on)mgdSel[c.id]=true;else delete mgdSel[c.id]});renderMgDet()}
+async function mgdRemove(id){if(mgdMode!=='mg')return;var name=detName(),c=db.contacts.find(function(x){return x.id===id});if(name==null||!c)return;
+  delete mgdSel[id];if(!setGroup(c,name,false))return;refreshMgViews();
   if(await saveGroups('Mailing group: -'+name+' (1)'))toast(c.name+' 님을 \''+name+'\'에서 제외했습니다','ok')}
-function mgdCopy(){var name=db.mailingGroups[mgdIdx];if(name!=null)copyEmails(mgMembers(name))}
-function mgdExport(){var name=db.mailingGroups[mgdIdx];if(name!=null)exportContacts(mgMembers(name))}
+async function mgdRemoveSelected(){if(mgdMode!=='mg')return;var name=detName(),ids=Object.keys(mgdSel);if(name==null||!ids.length)return;
+  if(!confirm(ids.length+'명을 \''+name+'\' 그룹에서 제외하시겠습니까?\n연락처 자체는 삭제되지 않습니다.'))return;
+  var changed=0;db.contacts.forEach(function(c){if(mgdSel[c.id]&&setGroup(c,name,false))changed++});mgdSel={};
+  if(!changed)return;refreshMgViews();
+  if(await saveGroups('Mailing group: -'+name+' ('+changed+')'))toast(changed+'명을 \''+name+'\'에서 제외했습니다','ok')}
+function mgdCopy(){copyEmails(detMembers())}
+function mgdExport(){exportContacts(detMembers())}
 
 // === Excel Import ===
 var xlWorkbook=null,xlRows=[],xlHeaders=[];
@@ -928,16 +975,18 @@ var FIELD_MAP=[
   {key:'email',label:'연락처(E)',words:['이메일','메일','email','e-mail','mail']},
   {key:'note',label:'비고',words:['비고','메모','참고','노트','note','memo','remark','comment','기타']}
 ];
-function openXL(){resetXL();document.getElementById('xlOv').classList.add('on')}
-function closeXL(){document.getElementById('xlOv').classList.remove('on');xlWorkbook=null;xlRows=[];xlHeaders=[]}
+function openXL(){openModal();regTab(1)}
+function closeXL(){closeModal()}
 function resetXL(){document.getElementById('xlStep1').style.display='';document.getElementById('xlStep2').style.display='none';
   document.getElementById('xlFile').value='';xlWorkbook=null;xlRows=[];xlHeaders=[]}
 async function loadSheetJS(){if(window.XLSX)return;
   return new Promise(function(ok){var s=document.createElement('script');s.src='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';s.onload=ok;document.head.appendChild(s)})}
+// CSV has no encoding marker: try UTF-8 (Google Sheets etc.), fall back to EUC-KR (Korean Excel)
+function decodeCSV(buf){var t=new TextDecoder('utf-8').decode(buf);if(t.indexOf('�')>=0){try{t=new TextDecoder('euc-kr').decode(buf)}catch(e){}}return t.replace(/^﻿/,'')}
 function handleXLFile(input){if(!input.files||!input.files.length)return;
   var file=input.files[0];var reader=new FileReader();reader.onload=async function(e){
     loading(true);await loadSheetJS();
-    try{xlWorkbook=XLSX.read(e.target.result,{type:'array'});
+    try{xlWorkbook=/\.csv$/i.test(file.name)?XLSX.read(decodeCSV(e.target.result),{type:'string'}):XLSX.read(e.target.result,{type:'array'});
       var sel=document.getElementById('xlSheet');
       sel.innerHTML=xlWorkbook.SheetNames.map(function(n,i){return'<option value="'+i+'">'+esc(n)+'</option>'}).join('');
       document.getElementById('xlFileInfo').textContent=file.name+' · '+xlWorkbook.SheetNames.length+'개 시트';
