@@ -34,6 +34,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn-d{background:var(--d);color:#fff}.btn-d:hover{background:#b91c1c}
 .btn-s{padding:7px 14px;font-size:13px}
 .main{padding:24px 32px;flex:1;max-width:1400px;width:100%;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.stat{background:#fff;border-radius:var(--r);padding:14px 18px;border:1px solid var(--g200);cursor:pointer;transition:all .15s;user-select:none}
+.stat:hover{border-color:var(--p)}.stat.on{border-color:var(--p);background:var(--pl)}
+.stat-label{font-size:11px;color:var(--g500);font-weight:600;text-transform:uppercase}.stat-num{font-size:26px;font-weight:700;margin-top:2px}
+.stat.on .stat-num{color:var(--p)}.stat.total{border-left:3px solid var(--p)}.stat.total .stat-num,.stat-num{color:var(--g800)}.stat.total .stat-num{color:var(--p)}
 .search{margin-bottom:18px;position:relative}
 .search input{width:100%;padding:11px 16px 11px 42px;border:2px solid #93b4f5;border-radius:var(--rs);font-size:14px;outline:none;background:#fff}
 .search input:focus{border-color:var(--p)}
@@ -216,7 +221,8 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 #mgaBody tr{cursor:pointer}.btn-p:disabled{opacity:.45;cursor:not-allowed}
 .mgd-sum{font-size:13px;color:var(--g600)}.mgd-sum b{color:var(--p)}
 @media(max-width:768px){.topbar{padding:12px 16px;flex-wrap:wrap;gap:10px}.topbar h1{font-size:16px;width:100%}.main{padding:16px}
-.tbl-wrap{overflow-x:auto}table{min-width:900px}.row2{flex-direction:column;gap:0}.detail{width:95vw}}
+.stats{grid-template-columns:repeat(3,1fr);gap:6px}.stat{padding:10px 12px}.stat-num{font-size:20px}.tbl-wrap{overflow-x:auto}table{min-width:900px}.row2{flex-direction:column;gap:0}.detail{width:95vw}}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -238,6 +244,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="main">
 <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 <input type="text" id="q" placeholder="이름, 기업, 연락처, 팀, 직책으로 검색..." oninput="curPage=1;render()"></div>
+<div class="stats" id="stats"></div>
 <div id="filterBar" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
 <select id="fltMail" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:150px"><option value="">메일링 그룹: 전체</option></select>
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
@@ -393,7 +400,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[],mailingGroups:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20;
+var db={categories:[],contacts:[],mailingGroups:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20,_dragCat=null,_dragMoved=false;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
@@ -445,8 +452,33 @@ function saveData(m){var run=_saveQ.then(async function(){var enc=await encryptD
 async function refresh(){await loadData();toast('새로고침 완료','ok')}
 
 // === Render ===
-// Category cards were removed from the main screen; kept as a no-op so existing callers stay simple
-function renderStats(){}
+function renderStats(){var el=document.getElementById('stats'),cn={},t=db.contacts.length;
+  db.categories.forEach(function(c){cn[c]=0});db.contacts.forEach(function(c){cn[c.category]=(cn[c.category]||0)+1});
+  var h='<div class="stat total'+(curFilter==='all'?' on':'')+'" onclick="setF(\'all\')"><div class="stat-label">전체</div><div class="stat-num">'+t+'</div></div>';
+  db.categories.forEach(function(c){var col=catColor(c);h+='<div class="stat'+(curFilter===c?' on':'')+'" onclick="if(!_dragMoved)setF(\''+esc(c)+'\');_dragMoved=false" style="border-left:3px solid '+col.fg+';cursor:grab" draggable="true" data-cat="'+esc(c)+'"><div class="stat-label" style="pointer-events:none">'+esc(c)+'</div><div class="stat-num" style="pointer-events:none">'+(cn[c]||0)+'</div></div>'});
+  el.innerHTML=h;setTimeout(initCatDrag,0)}
+function initCatDrag(){
+  var wrap=document.getElementById('stats');
+  wrap.querySelectorAll('[data-cat]').forEach(function(el){
+    el.addEventListener('dragstart',function(e){
+      _dragCat=el.dataset.cat;_dragMoved=false;
+      e.dataTransfer.setData('text/plain',_dragCat);
+      e.dataTransfer.effectAllowed='move';
+      setTimeout(function(){el.style.opacity='.35';el.style.transform='scale(.97)'},0)});
+    el.addEventListener('dragend',function(){
+      el.style.opacity='';el.style.transform=''});
+    el.addEventListener('dragover',function(e){
+      e.preventDefault();if(!_dragCat||el.dataset.cat===_dragCat)return;
+      var dragging=wrap.querySelector('[data-cat="'+_dragCat+'"]');if(!dragging)return;
+      var mid=el.getBoundingClientRect().left+el.getBoundingClientRect().width/2;
+      _dragMoved=true;wrap.insertBefore(dragging,e.clientX<mid?el:el.nextSibling)});
+    el.addEventListener('drop',async function(e){
+      e.preventDefault();
+      var newOrder=Array.from(wrap.querySelectorAll('[data-cat]')).map(function(c){return c.dataset.cat});
+      db.categories=newOrder;
+      renderStats();updateFilterOptions();
+      try{await saveData('Reorder categories')}catch(err){toast('순서 저장 실패','er')}
+    })})}
 function updateFilterOptions(){
   var mSel=document.getElementById('fltMail');var curM=mSel.value;
   mSel.innerHTML='<option value="">메일링 그룹: 전체</option>'+db.mailingGroups.map(function(g){return'<option value="'+escA(g)+'">'+esc(g)+'</option>'}).join('')+'<option value="__none__">미지정</option>';
@@ -479,7 +511,7 @@ function render(){var tb=document.getElementById('tbody'),q=(document.getElement
       +'<td class="td-mg" onclick="openRowPop(event,\''+c.id+'\')" title="'+escA(groups.length?groups.join(', '):'클릭해서 메일링 그룹 지정')+'">'+mgChips(groups)+'</td>'
       +'<td class="td-act"><button class="btn-edit" onclick="openDet(\''+c.id+'\',0)">상세</button><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>'}).join('');
   document.getElementById('chkAll').checked=false}
-function setF(f){curFilter=f;curPage=1;updateFilterOptions();render()}
+function setF(f){curFilter=f;curPage=1;var cards=document.getElementById('stats').children;for(var i=0;i<cards.length;i++){var c=cards[i];c.classList.toggle('on',i===0?f==='all':db.categories[i-1]===f)}updateFilterOptions();render()}
 function gotoPage(p){curPage=p;render();window.scrollTo({top:0,behavior:'smooth'})}
 function renderPager(total,pages){
   var p=document.getElementById('pager');if(pages<=1){p.innerHTML='<span style="color:var(--g500)">총 '+total+'명</span>';return}
