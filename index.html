@@ -205,7 +205,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
 <div style="margin-left:auto"><select id="sortBy" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="name">이름순</option><option value="meeting">최근 미팅순</option></select></div>
 </div>
-<div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
+<div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-p btn-s" onclick="exportSelected()">엑셀 다운로드</button><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
 <div class="tbl-wrap"><table><thead><tr>
 <th class="th-chk"><input type="checkbox" id="chkAll" onchange="toggleAll()"></th>
 <th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>연락처(M)</th><th>연락처(E)</th><th>최근미팅</th><th>쿠폰</th><th></th>
@@ -450,6 +450,16 @@ function toggleAll(){var all=document.getElementById('chkAll').checked;var q=(do
   selected={};if(all)list.forEach(function(c){selected[c.id]=true});updateDelBar();render();document.getElementById('chkAll').checked=all}
 function clearSel(){selected={};updateDelBar();render()}
 function updateDelBar(){var n=Object.keys(selected).length;document.getElementById('delBar').classList.toggle('on',n>0);document.getElementById('delCount').textContent=n+'개 선택'}
+async function exportSelected(){var list=db.contacts.filter(function(c){return selected[c.id]});if(!list.length)return;
+  await loadSheetJS();
+  var rows=[['구분','기업','성함','직책','조직/팀','연락처(M)','연락처(E)','최근미팅','쿠폰']].concat(list.map(function(c){
+    var lastMeet=c.meetings&&c.meetings.length?c.meetings.slice().sort(function(a,b){return b.date.localeCompare(a.date)})[0].date:'';
+    var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
+    return[c.category||'',c.company||'',c.name||'',c.title||'',c.team||'',c.phone||'',c.email||'',lastMeet,cpnCnt?cpnCnt+'회':'']}));
+  var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[10,20,10,14,18,16,26,12,8].map(function(w){return{wch:w}});
+  var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'명함첩');
+  var d=new Date(),ymd=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  XLSX.writeFile(wb,'명함첩_'+ymd+'.xlsx')}
 async function deleteSelected(){var ids=Object.keys(selected);if(!ids.length||!confirm(ids.length+'개 연락처를 삭제하시겠습니까?'))return;
   loading(true);db.contacts=db.contacts.filter(function(c){return!selected[c.id]});selected={};
   try{await saveData('Delete '+ids.length);toast(ids.length+'개 삭제 완료','ok')}catch(e){toast('삭제 실패','er')}
