@@ -171,8 +171,32 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 .loader{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);z-index:150;justify-content:center;align-items:center}.loader.on{display:flex}
 .spin{width:36px;height:36px;border:3px solid var(--g200);border-top-color:var(--p);border-radius:50%;animation:sp .7s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.del-bar{display:none;align-items:center;gap:12px;padding:10px 16px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--rs);margin-bottom:14px}.del-bar.on{display:flex}
-.del-bar span{font-size:13px;color:var(--d);font-weight:500}
+.del-bar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--rs);margin-bottom:14px}.del-bar.on{display:flex}
+.del-bar span{font-size:13px;color:var(--p);font-weight:600;margin-right:4px}
+.toast{max-width:min(460px,calc(100vw - 40px));line-height:1.45}
+
+/* Mailing Groups */
+.mg-chip{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;background:#fff;border:1px solid var(--g300);color:var(--g700);margin-right:3px;white-space:nowrap}
+.mg-chip.more{background:var(--g100);border-color:var(--g200);color:var(--g500)}
+.mg-empty{color:var(--g400);font-size:11px}
+.td-mg{cursor:pointer;white-space:nowrap}
+.td-mg:hover .mg-chip{border-color:var(--p);color:var(--p)}.td-mg:hover .mg-empty{color:var(--p)}
+.td-act{text-align:right;white-space:nowrap}.td-act .btn-edit+.btn-edit{margin-left:4px}
+.pop{position:absolute;z-index:120;background:#fff;border:1px solid var(--g200);border-radius:var(--rs);box-shadow:0 10px 30px rgba(0,0,0,.12);padding:6px;min-width:210px;max-width:280px;display:none}
+.pop.on{display:block}
+.pop-title{font-size:11px;font-weight:600;color:var(--g500);padding:6px 8px}
+.pop-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--g700);width:100%;border:none;background:none;text-align:left;font-family:inherit}
+.pop-item:hover{background:var(--g50)}
+.pop-item input{width:15px;height:15px;accent-color:var(--p);cursor:pointer;flex-shrink:0}
+.pop-cnt{margin-left:auto;font-size:11px;color:var(--g400);flex-shrink:0}
+.pop-empty{font-size:12px;color:var(--g400);padding:8px;line-height:1.5}
+.det-sec{padding:14px 26px;border-bottom:1px solid var(--g200)}
+.det-sec-title{font-size:12px;font-weight:600;color:var(--g600);margin-bottom:8px}
+.det-grid{display:grid;grid-template-columns:72px 1fr;gap:6px 12px;font-size:13px}
+.det-grid dt{color:var(--g500);font-size:12px}.det-grid dd{color:var(--g800);word-break:break-all}
+.det-grid a{color:var(--g700);text-decoration:none}.det-grid a:hover{color:var(--p)}
+.mgd-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.mgd-sum{font-size:13px;color:var(--g600)}.mgd-sum b{color:var(--p)}
 @media(max-width:768px){.topbar{padding:12px 16px;flex-wrap:wrap;gap:10px}.topbar h1{font-size:16px;width:100%}.main{padding:16px}
 .stats{grid-template-columns:repeat(3,1fr);gap:6px}.stat{padding:10px 12px}.stat-num{font-size:20px}.tbl-wrap{overflow-x:auto}table{min-width:900px}.row2{flex-direction:column;gap:0}.detail{width:95vw}}
 @media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -192,6 +216,7 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-p" onclick="openModal()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>신규 연락처 등록</button>
 <button class="btn btn-o" onclick="openXL()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>파일 업로드</button>
 <button class="btn btn-o btn-s" onclick="openCatMgr()">구분 관리</button>
+<button class="btn btn-o btn-s" onclick="openMgMgr()">메일링 그룹</button>
 <button class="btn btn-o btn-s" onclick="refresh()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>새로고침</button>
 <button class="btn btn-o btn-s" onclick="logout()">로그아웃</button></div></div>
 <div class="main">
@@ -202,13 +227,20 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <select id="fltCat" onchange="curPage=1;updateFilterOptions();render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:120px"><option value="">구분: 전체</option></select>
 <select id="fltCompany" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:140px"><option value="">기업: 전체</option></select>
 <select id="fltCoupon" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="">쿠폰: 전체</option><option value="Y">지급함</option><option value="N">미지급</option></select>
+<select id="fltMail" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff;min-width:150px"><option value="">메일링 그룹: 전체</option></select>
 <button class="btn btn-o btn-s" onclick="clearFilters()">필터 초기화</button>
 <div style="margin-left:auto"><select id="sortBy" onchange="curPage=1;render()" style="padding:7px 12px;border:1.5px solid var(--g200);border-radius:var(--rs);font-size:13px;outline:none;background:#fff"><option value="recent">최근 등록순</option><option value="name">이름순</option><option value="meeting">최근 미팅순</option></select></div>
 </div>
-<div class="del-bar" id="delBar"><span id="delCount">0개 선택</span><button class="btn btn-p btn-s" onclick="exportSelected()">엑셀 다운로드</button><button class="btn btn-d btn-s" onclick="deleteSelected()">선택 삭제</button><button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button></div>
+<div class="del-bar" id="delBar"><span id="delCount">0개 선택</span>
+<button class="btn btn-o btn-s" data-pop onclick="openBulkPop(event,'add')">그룹에 추가 ▾</button>
+<button class="btn btn-o btn-s" data-pop onclick="openBulkPop(event,'remove')">그룹에서 제외 ▾</button>
+<button class="btn btn-o btn-s" onclick="copySelectedEmails()">이메일 복사</button>
+<button class="btn btn-p btn-s" onclick="exportSelected()">엑셀 다운로드</button>
+<button class="btn btn-o btn-s" onclick="clearSel()">선택 해제</button>
+<button class="btn btn-d btn-s" onclick="deleteSelected()" style="margin-left:auto">선택 삭제</button></div>
 <div class="tbl-wrap"><table><thead><tr>
 <th class="th-chk"><input type="checkbox" id="chkAll" onchange="toggleAll()"></th>
-<th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>연락처(M)</th><th>연락처(E)</th><th>최근미팅</th><th>쿠폰</th><th></th>
+<th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>연락처(M)</th><th>연락처(E)</th><th>메일링 그룹</th><th></th>
 </tr></thead><tbody id="tbody"></tbody></table></div>
 <div id="pager" style="display:flex;justify-content:center;align-items:center;gap:6px;padding:14px 0;font-size:13px"></div></div></div>
 
@@ -253,9 +285,11 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <div class="det-info"><div class="det-avatar" id="detAvatar"></div>
 <div class="det-meta"><h3 id="detName"></h3><p id="detSub"></p></div>
 <button class="modal-x" onclick="closeDet()" style="margin-left:auto">&times;</button></div>
+<div class="det-sec"><dl class="det-grid" id="detGrid"></dl></div>
+<div class="det-sec"><div class="det-sec-title">메일링 그룹</div><div class="presets" id="detGroups"></div></div>
 <div class="det-tabs">
-<div class="det-tab on" onclick="detTab(0)">미팅 이력</div>
-<div class="det-tab" onclick="detTab(1)">쿠폰 이력</div></div>
+<div class="det-tab on" id="detTabMeet" onclick="detTab(0)">미팅 이력</div>
+<div class="det-tab" id="detTabCpn" onclick="detTab(1)">쿠폰 이력</div></div>
 <div class="det-panel" id="detMeet">
 <div id="meetList"></div>
 <div class="det-add"><div class="det-add-title">미팅 추가</div>
@@ -304,13 +338,37 @@ td.td-chk input,th.th-chk input{width:16px;height:16px;accent-color:var(--p);cur
 <button class="btn btn-o" onclick="closeCatMgr()" style="width:100%;justify-content:center;margin-top:12px">닫기</button>
 </div></div></div>
 
+<!-- MAILING GROUP MANAGEMENT MODAL -->
+<div class="overlay" id="mgOv"><div class="modal">
+<div class="modal-head"><h2>메일링 그룹</h2><button class="modal-x" onclick="closeMgMgr()">&times;</button></div>
+<div class="modal-body"><p style="font-size:12px;color:var(--g500);margin-bottom:12px">그룹을 누르면 포함된 연락처를 확인하고 이메일 복사·엑셀 다운로드를 할 수 있습니다.</p>
+<div id="mgList"></div>
+<div id="mgNewWrap" class="cat-item" style="display:none"><input type="text" id="mgNewName" placeholder="새 그룹 이름 (예: 뉴스레터)" style="flex:1;min-width:120px;padding:7px 10px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onkeydown="if(event.key==='Enter')createGroup();if(event.key==='Escape')cancelNewGroup()">
+<button class="btn btn-p btn-s" onclick="createGroup()">만들기</button><button class="btn btn-o btn-s" onclick="cancelNewGroup()">취소</button></div>
+<button class="btn btn-o" id="mgNewBtn" onclick="startNewGroup()" style="width:100%;justify-content:center;margin-top:4px;border-style:dashed;color:var(--p)">+ 새 그룹 만들기</button>
+<button class="btn btn-o" onclick="closeMgMgr()" style="width:100%;justify-content:center;margin-top:8px">닫기</button>
+</div></div></div>
+
+<!-- MAILING GROUP DETAIL MODAL -->
+<div class="overlay" id="mgDetOv"><div class="modal" style="width:860px">
+<div class="modal-head"><h2 id="mgdTitle"></h2><button class="modal-x" onclick="closeMgDet()">&times;</button></div>
+<div class="modal-body">
+<div class="mgd-head"><div class="mgd-sum" id="mgdSum"></div>
+<div style="margin-left:auto;display:flex;gap:8px"><button class="btn btn-o btn-s" onclick="mgdCopy()">이메일 복사</button><button class="btn btn-p btn-s" onclick="mgdExport()">엑셀 다운로드</button></div></div>
+<div class="search" style="margin-bottom:12px"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input type="text" id="mgdQ" placeholder="이름, 기업, 이메일로 검색..." oninput="renderMgDet()"></div>
+<div class="xl-preview" style="max-height:50vh"><table><thead><tr><th>구분</th><th>기업</th><th>성함</th><th>직책</th><th>조직/팀</th><th>이메일</th><th></th></tr></thead><tbody id="mgdBody"></tbody></table></div>
+<div class="modal-btns" style="margin-top:4px"><button class="btn btn-o" onclick="backToMgMgr()">← 그룹 목록</button><button class="btn btn-o" onclick="closeMgDet()">닫기</button></div>
+</div></div></div>
+
+<div class="pop" id="mgPop"></div>
 <div class="loader" id="loader"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
 var REPO='chera-bot/partner-contacts',FILE='data/contacts.json';
 var ENC={iv:'c05b5a6287d5a219a8c1d92f',tag:'6539b2e1786679a30e8e265f0239b6ea',enc:'a1b34df5ec2b5f4f797a1d8f95f104a99ddd5df3808dfbccb4c9bda6d477244991a29ebc5815d57d'};
-var db={categories:[],contacts:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20,_dragCat=null,_dragMoved=false;
+var db={categories:[],contacts:[],mailingGroups:[]},ghToken='',curFilter='all',fileSha='',selected={},editId=null,_pwd='',detContactId=null,curPage=1,PAGE_SIZE=20,_dragCat=null,_dragMoved=false;
 var MEET_TYPES=['첫 인사','정기미팅','IR','식사','전화통화','기타'];
 var CAT_COLORS=[{bg:'#dbeafe',fg:'#1d4ed8'},{bg:'#fef3c7',fg:'#92400e'},{bg:'#d1fae5',fg:'#065f46'},{bg:'#fce7f3',fg:'#9d174d'},{bg:'#fed7aa',fg:'#9a3412'},{bg:'#e0e7ff',fg:'#3730a3'},{bg:'#fae8ff',fg:'#86198f'},{bg:'#ccfbf1',fg:'#115e59'},{bg:'#fef9c3',fg:'#854d0e'},{bg:'#ede9fe',fg:'#5b21b6'},{bg:'#ffe4e6',fg:'#9f1239'},{bg:'#f0fdf4',fg:'#166534'}];
 function catColor(cat){var i=db.categories.indexOf(cat);if(i<0)i=0;return CAT_COLORS[i%CAT_COLORS.length]}
@@ -337,7 +395,7 @@ async function login(){var pw=document.getElementById('pw').value,err=document.g
   var t=await decrypt(pw);if(!t){err.textContent='암호가 올바르지 않습니다';btn.disabled=false;btn.textContent='접속';return}
   ghToken=t;_pwd=pw;sessionStorage.setItem('_k',pw);document.getElementById('loginPage').classList.add('hide');
   document.getElementById('dashboard').classList.add('on');btn.disabled=false;btn.textContent='접속';await loadData()}
-function logout(){ghToken='';sessionStorage.removeItem('_k');db={categories:[],contacts:[]};
+function logout(){ghToken='';sessionStorage.removeItem('_k');db={categories:[],contacts:[],mailingGroups:[]};
   document.getElementById('dashboard').classList.remove('on');document.getElementById('loginPage').classList.remove('hide');document.getElementById('pw').value=''}
 async function autoLogin(){var k=sessionStorage.getItem('_k');if(!k)return;var t=await decrypt(k);if(!t)return;
   ghToken=t;_pwd=k;document.getElementById('loginPage').classList.add('hide');document.getElementById('dashboard').classList.add('on');await loadData()}
@@ -351,10 +409,14 @@ async function ghPut(p,c,sha,m){var b={message:m,content:btoa(unescape(encodeURI
 // === Data ===
 async function loadData(){loading(true);try{var r=await ghGet(FILE);fileSha=r.sha;
   db=JSON.parse(await decryptData(decodeURIComponent(escape(atob(r.content.replace(/\n/g,''))))));
-  db.contacts.forEach(function(c){if(!c.meetings)c.meetings=[];if(!c.coupons)c.coupons=[]});
+  if(!Array.isArray(db.mailingGroups))db.mailingGroups=[];
+  db.contacts.forEach(function(c){if(!c.meetings)c.meetings=[];if(!c.coupons)c.coupons=[];if(!Array.isArray(c.mailingGroups))c.mailingGroups=[]});
   var _mi=db.categories.indexOf('Mobility');if(_mi>=0){var _tgt=db.categories.filter(function(_,j){return j!==_mi})[0]||'IR';db.contacts.forEach(function(c){if(c.category==='Mobility')c.category=_tgt});db.categories.splice(_mi,1);saveData('Remove Mobility')}
   }catch(e){toast('데이터 로드 실패','er')}selected={};updateDelBar();renderStats();updateFilterOptions();render();loading(false)}
-async function saveData(m){var enc=await encryptData(JSON.stringify(db,null,2));var r=await ghPut(FILE,enc,fileSha,m||'Update');if(r.content)fileSha=r.content.sha;return r}
+// Saves run one at a time so rapid edits never race on the same file sha
+var _saveQ=Promise.resolve();
+function saveData(m){var run=_saveQ.then(async function(){var enc=await encryptData(JSON.stringify(db,null,2));var r=await ghPut(FILE,enc,fileSha,m||'Update');if(r.content)fileSha=r.content.sha;return r});
+  _saveQ=run.catch(function(){});return run}
 async function refresh(){await loadData();toast('새로고침 완료','ok')}
 
 // === Render ===
@@ -396,37 +458,42 @@ function updateFilterOptions(){
   var companies={};list.forEach(function(c){if(c.company)companies[c.company]=true});
   var sel=document.getElementById('fltCompany');var cur=sel.value;
   sel.innerHTML='<option value="">기업: 전체</option>'+Object.keys(companies).sort().map(function(c){return'<option value="'+esc(c)+'">'+esc(c)+'</option>'}).join('');
-  if(companies[cur])sel.value=cur;else sel.value=''}
-function clearFilters(){document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';curPage=1;render()}
-function render(){var tb=document.getElementById('tbody'),q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
-  var fCat=document.getElementById('fltCat').value,fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value;
+  if(companies[cur])sel.value=cur;else sel.value='';
+  var mSel=document.getElementById('fltMail');var curM=mSel.value;
+  mSel.innerHTML='<option value="">메일링 그룹: 전체</option>'+db.mailingGroups.map(function(g){return'<option value="'+escA(g)+'">'+esc(g)+'</option>'}).join('')+'<option value="__none__">미지정</option>';
+  mSel.value=(curM==='__none__'||db.mailingGroups.indexOf(curM)>=0)?curM:''}
+function clearFilters(){document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltMail').value='';curPage=1;render()}
+// Same list for the table and for "select all", so selection always matches what the filters show
+function getFilteredList(){var q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
+  var fCat=document.getElementById('fltCat').value,fCo=document.getElementById('fltCompany').value,fCpn=document.getElementById('fltCoupon').value,fMg=document.getElementById('fltMail').value;
   if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
   if(fCat)list=list.filter(function(c){return c.category===fCat});
   if(fCo)list=list.filter(function(c){return c.company===fCo});
   if(fCpn==='Y')list=list.filter(function(c){return c.coupons&&c.coupons.length>0});
   if(fCpn==='N')list=list.filter(function(c){return!c.coupons||!c.coupons.length});
+  if(fMg==='__none__')list=list.filter(function(c){return!mgOf(c).length});
+  else if(fMg)list=list.filter(function(c){return mgOf(c).indexOf(fMg)>=0});
   if(q)list=list.filter(function(c){return[c.company,c.name,c.phone,c.email,c.team,c.title].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})});
   var sort=document.getElementById('sortBy').value;
   if(sort==='recent')list=list.slice().reverse();
   if(sort==='name')list=list.slice().sort(function(a,b){return(a.name||'').localeCompare(b.name||'','ko')});
   if(sort==='meeting')list=list.slice().sort(function(a,b){var am=a.meetings&&a.meetings.length?a.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';var bm=b.meetings&&b.meetings.length?b.meetings.slice().sort(function(x,y){return y.date.localeCompare(x.date)})[0].date:'';return bm.localeCompare(am)});
-  if(!list.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';document.getElementById('pager').innerHTML='';return}
+  return list}
+function render(){var tb=document.getElementById('tbody'),q=(document.getElementById('q').value||'').toLowerCase(),list=getFilteredList();
+  if(!list.length){tb.innerHTML='<tr><td colspan="10"><div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>'+(q?'검색 결과가 없습니다':'등록된 연락처가 없습니다')+'</p></div></td></tr>';document.getElementById('pager').innerHTML='';return}
   var total=list.length,pages=Math.max(1,Math.ceil(total/PAGE_SIZE));
   if(curPage>pages)curPage=pages;if(curPage<1)curPage=1;
   var pageList=list.slice((curPage-1)*PAGE_SIZE,curPage*PAGE_SIZE);
   renderPager(total,pages);
   tb.innerHTML=pageList.map(function(c){
-    var sel=selected[c.id]?' selected':'',chk=selected[c.id]?' checked':'';
-    var lastMeet=c.meetings&&c.meetings.length?c.meetings.sort(function(a,b){return b.date.localeCompare(a.date)})[0]:null;
-    var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
+    var sel=selected[c.id]?' selected':'',chk=selected[c.id]?' checked':'',groups=mgSorted(c);
     return '<tr class="'+sel+'"><td class="td-chk"><input type="checkbox"'+chk+' onchange="toggleSel(\''+c.id+'\')"></td>'
       +'<td>'+badgeHtml(c.category)+'</td>'
       +'<td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
       +'<td class="mono">'+(c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'" style="color:var(--g600);text-decoration:none">'+esc(c.phone)+'</a>':'')+'</td>'
       +'<td class="mono">'+(c.email?'<a href="mailto:'+esc(c.email)+'" style="color:var(--g600);text-decoration:none">'+esc(c.email)+'</a>':'')+'</td>'
-      +'<td class="td-meet" onclick="openDet(\''+c.id+'\',0)">'+(lastMeet?'<span class="meet-date">'+lastMeet.date.slice(5)+'</span>':'<span style="color:var(--g400)">-</span>')+'</td>'
-      +'<td class="td-cpn" onclick="openDet(\''+c.id+'\',1)">'+(cpnCnt?'<span class="cpn-badge">'+cpnCnt+'회</span>':'<span style="color:var(--g400)">-</span>')+'</td>'
-      +'<td><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>'}).join('');
+      +'<td class="td-mg" onclick="openRowPop(event,\''+c.id+'\')" title="'+escA(groups.length?groups.join(', '):'클릭해서 메일링 그룹 지정')+'">'+mgChips(groups)+'</td>'
+      +'<td class="td-act"><button class="btn-edit" onclick="openDet(\''+c.id+'\',0)">상세</button><button class="btn-edit" onclick="editContact(\''+c.id+'\')">수정</button></td></tr>'}).join('');
   document.getElementById('chkAll').checked=false}
 function setF(f){curFilter=f;curPage=1;document.getElementById('fltCat').value='';document.getElementById('fltCompany').value='';document.getElementById('fltCoupon').value='';document.getElementById('fltCat').style.display=f==='all'?'':'none';var cards=document.getElementById('stats').children;for(var i=0;i<cards.length;i++){var c=cards[i];c.classList.toggle('on',i===0?f==='all':db.categories[i-1]===f)}updateFilterOptions();render()}
 function gotoPage(p){curPage=p;render();window.scrollTo({top:0,behavior:'smooth'})}
@@ -444,19 +511,16 @@ function renderPager(total,pages){
 
 // === Selection & Delete ===
 function toggleSel(id){if(selected[id])delete selected[id];else selected[id]=true;updateDelBar();render()}
-function toggleAll(){var all=document.getElementById('chkAll').checked;var q=(document.getElementById('q').value||'').toLowerCase(),list=db.contacts;
-  if(curFilter!=='all')list=list.filter(function(c){return c.category===curFilter});
-  if(q)list=list.filter(function(c){return[c.company,c.name,c.phone,c.email,c.team,c.title].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})});
+function toggleAll(){var all=document.getElementById('chkAll').checked;var list=getFilteredList();
   selected={};if(all)list.forEach(function(c){selected[c.id]=true});updateDelBar();render();document.getElementById('chkAll').checked=all}
 function clearSel(){selected={};updateDelBar();render()}
 function updateDelBar(){var n=Object.keys(selected).length;document.getElementById('delBar').classList.toggle('on',n>0);document.getElementById('delCount').textContent=n+'개 선택'}
-async function exportSelected(){var list=db.contacts.filter(function(c){return selected[c.id]});if(!list.length)return;
+function exportSelected(){return exportContacts(db.contacts.filter(function(c){return selected[c.id]}))}
+async function exportContacts(list){if(!list.length){toast('내려받을 연락처가 없습니다','er');return}
   await loadSheetJS();
-  var rows=[['구분','기업','성함','직책','조직/팀','연락처(M)','연락처(E)','최근미팅','쿠폰']].concat(list.map(function(c){
-    var lastMeet=c.meetings&&c.meetings.length?c.meetings.slice().sort(function(a,b){return b.date.localeCompare(a.date)})[0].date:'';
-    var cpnCnt=c.coupons?c.coupons.reduce(function(s,x){return s+(x.qty||1)},0):0;
-    return[c.category||'',c.company||'',c.name||'',c.title||'',c.team||'',c.phone||'',c.email||'',lastMeet,cpnCnt?cpnCnt+'회':'']}));
-  var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[10,20,10,14,18,16,26,12,8].map(function(w){return{wch:w}});
+  var rows=[['구분','기업','성함','직책','조직/팀','연락처(M)','연락처(E)','메일링 그룹']].concat(list.map(function(c){
+    return[c.category||'',c.company||'',c.name||'',c.title||'',c.team||'',c.phone||'',c.email||'',mgSorted(c).join(', ')]}));
+  var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[10,20,10,14,18,16,26,26].map(function(w){return{wch:w}});
   var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'명함첩');
   var d=new Date(),ymd=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
   XLSX.writeFile(wb,'명함첩_'+ymd+'.xlsx')}
@@ -531,7 +595,7 @@ async function submit(){var d=getFormData();var isNew=d.isNewCat;
   all.forEach(function(item){
     if(item.isNewCat&&item.category&&db.categories.indexOf(item.category)<0)db.categories.push(item.category);
     db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:item.category,company:item.company,name:item.name,
-      title:item.title||'',team:item.team||'',phone:item.phone||'',email:item.email||'',note:item.note||'',meetings:[],coupons:[]})});
+      title:item.title||'',team:item.team||'',phone:item.phone||'',email:item.email||'',note:item.note||'',meetings:[],coupons:[],mailingGroups:[]})});
   try{var r=await saveData('Add '+all.length+' contacts');if(r.content){toast(all.length+'명 등록 완료','ok');closeModal();renderStats();render()}
   else{for(var i=0;i<all.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='등록'}}
   catch(e){for(var i=0;i<all.length;i++)db.contacts.pop();toast('오류','er');btn.disabled=false;btn.textContent='등록'}}
@@ -545,9 +609,22 @@ function openDet(id,tab){detContactId=id;var c=db.contacts.find(function(x){retu
   document.getElementById('mDate').value=today();document.getElementById('cDate').value=today();
   document.getElementById('mMemo').value='';document.getElementById('cQty').textContent='1';
   document.getElementById('mOther').classList.remove('on');
-  detTab(tab||0);renderMeet();renderCpn();renderMeetPresets();
+  editMeetIdx=-1;detTab(tab||0);renderDetInfo();renderDetGroups();renderMeet();renderCpn();renderMeetPresets();
   document.getElementById('detOv').classList.add('on')}
 function closeDet(){document.getElementById('detOv').classList.remove('on');detContactId=null}
+function renderDetInfo(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
+  var row=function(k,v){return'<dt>'+k+'</dt><dd>'+(v||'<span style="color:var(--g400)">-</span>')+'</dd>'};
+  document.getElementById('detGrid').innerHTML=row('구분',badgeHtml(c.category))
+    +row('연락처(M)',c.phone?'<a href="tel:'+c.phone.replace(/[^0-9+]/g,'')+'">'+esc(c.phone)+'</a>':'')
+    +row('연락처(E)',c.email?'<a href="mailto:'+escA(c.email)+'">'+esc(c.email)+'</a>':'')
+    +(c.note?row('비고',esc(c.note)):'')}
+function renderDetGroups(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;var el=document.getElementById('detGroups');
+  if(!db.mailingGroups.length){el.innerHTML='<span style="font-size:12px;color:var(--g400)">메일링 그룹이 없습니다. 우상단 [메일링 그룹]에서 만들 수 있어요.</span>';return}
+  var g=mgOf(c);el.innerHTML=db.mailingGroups.map(function(name,i){var on=g.indexOf(name)>=0;
+    return'<button class="preset'+(on?' on':'')+'" onclick="toggleContactGroup(\''+c.id+'\','+i+','+(!on)+')">'+(on?'✓ ':'')+esc(name)+'</button>'}).join('')}
+function renderDetTabs(c){var cnt=(c.coupons||[]).reduce(function(s,x){return s+(x.qty||1)},0);
+  document.getElementById('detTabMeet').textContent='미팅 이력 ('+(c.meetings||[]).length+')';
+  document.getElementById('detTabCpn').textContent='쿠폰 이력 ('+cnt+'회)'}
 function detTab(n){var tabs=document.querySelectorAll('.det-tab');tabs.forEach(function(t,i){t.classList.toggle('on',i===n)});
   document.getElementById('detMeet').classList.toggle('hide',n!==0);document.getElementById('detCpn').classList.toggle('hide',n!==1)}
 function today(){return new Date().toISOString().slice(0,10)}
@@ -557,7 +634,7 @@ function renderMeetPresets(){document.getElementById('mPresets').innerHTML=MEET_
   return'<button class="preset'+(selMeet===t?' on':'')+'" onclick="pickMeet(\''+t+'\')">'+t+'</button>'}).join('')}
 function pickMeet(t){selMeet=t;renderMeetPresets();document.getElementById('mOther').classList.toggle('on',t==='기타')}
 var editMeetIdx=-1;
-function renderMeet(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
+function renderMeet(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;renderDetTabs(c);
   var el=document.getElementById('meetList');if(!c.meetings||!c.meetings.length){el.innerHTML='<div class="det-empty">미팅 이력이 없습니다</div>';return}
   var sorted=c.meetings.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
   el.innerHTML=sorted.map(function(m,i){
@@ -586,7 +663,7 @@ async function delMeet(i){var c=db.contacts.find(function(x){return x.id===detCo
 
 // Coupon
 function stepQty(d){cpnQty=Math.max(1,cpnQty+d);document.getElementById('cQty').textContent=cpnQty}
-function renderCpn(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;
+function renderCpn(){var c=db.contacts.find(function(x){return x.id===detContactId});if(!c)return;renderDetTabs(c);
   var el=document.getElementById('cpnList');if(!c.coupons||!c.coupons.length){el.innerHTML='<div class="det-empty">쿠폰 이력이 없습니다</div>';return}
   var sorted=c.coupons.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
   var total=sorted.reduce(function(s,x){return s+(x.qty||1)},0);
@@ -605,8 +682,10 @@ async function delCpn(i){var c=db.contacts.find(function(x){return x.id===detCon
 
 // === Utils ===
 function loading(on){document.getElementById('loader').classList.toggle('on',on)}
-function toast(m,t){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+t+' on';setTimeout(function(){el.classList.remove('on')},3000)}
+var _toastT=null;
+function toast(m,t,ms){var el=document.getElementById('toast');el.textContent=m;el.className='toast '+t+' on';clearTimeout(_toastT);_toastT=setTimeout(function(){el.classList.remove('on')},ms||3000)}
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function escA(s){return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function fmtPhone(p){if(!p)return'';var n=p.replace(/[^0-9]/g,'');if(n.length===11)return n.slice(0,3)+'-'+n.slice(3,7)+'-'+n.slice(7);if(n.length===10)return n.slice(0,3)+'-'+n.slice(3,6)+'-'+n.slice(6);return p}
 function autoFmtPhone(el){var cur=el.selectionStart,raw=el.value,digits=raw.replace(/[^0-9]/g,'');if(digits.length>11)digits=digits.slice(0,11);var fmt='';if(digits.length<=3)fmt=digits;else if(digits.length<=7)fmt=digits.slice(0,3)+'-'+digits.slice(3);else if(digits.length<=11)fmt=digits.slice(0,3)+'-'+digits.slice(3,7)+'-'+digits.slice(7);if(fmt!==raw){var diff=fmt.length-raw.length;el.value=fmt;el.setSelectionRange(cur+diff,cur+diff)}if(digits.length===11){var next=el.closest('.row2,.bc-row');if(next){var inputs=next.querySelectorAll('input');for(var i=0;i<inputs.length;i++){if(inputs[i]===el&&inputs[i+1]){inputs[i+1].focus();break}}}}}
 
@@ -655,7 +734,7 @@ async function submitBatch(){var cat=document.getElementById('bCat').value;
   var valid=batchItems.filter(function(c){return c.company&&c.name});if(!valid.length){toast('기업명과 성함이 입력된 항목이 없습니다','er');return}
   var btn=document.getElementById('batchSubBtn');btn.disabled=true;btn.textContent='등록 중...';
   valid.forEach(function(c){db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:cat,company:c.company,name:c.name,
-    title:c.title||'',team:c.team||'',phone:c.phone||'',email:c.email||'',note:'',meetings:[],coupons:[]})});
+    title:c.title||'',team:c.team||'',phone:c.phone||'',email:c.email||'',note:'',meetings:[],coupons:[],mailingGroups:[]})});
   try{var r=await saveData('Batch add '+valid.length);if(r.content){toast(valid.length+'개 등록 완료','ok');closeBatch();renderStats();render()}
   else{for(var i=0;i<valid.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='전체 등록'}}
   catch(e){for(var i=0;i<valid.length;i++)db.contacts.pop();toast('오류','er');btn.disabled=false;btn.textContent='전체 등록'}}
@@ -711,6 +790,132 @@ async function delCatConfirm(i,moveTo){var cat=db.categories[i];
   if(moveTo)db.contacts.forEach(function(c){if(c.category===cat)c.category=moveTo});
   db.categories.splice(i,1);if(curFilter===cat)curFilter='all';
   try{await saveData('Delete: '+cat+(moveTo?' → '+moveTo:''));toast('"'+cat+'" 삭제','ok');renderCatMgr()}catch(e){toast('저장 실패','er')}}
+
+// === Mailing Groups ===
+// db.mailingGroups holds group names; each contact.mailingGroups holds the names it belongs to.
+function mgOf(c){return c&&Array.isArray(c.mailingGroups)?c.mailingGroups:[]}
+function mgSorted(c){var g=mgOf(c),order=db.mailingGroups;return g.slice().sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return(ia<0?1e9:ia)-(ib<0?1e9:ib)})}
+function setGroup(c,name,on){var g=mgOf(c).slice(),i=g.indexOf(name);if(on&&i<0)g.push(name);if(!on&&i>=0)g.splice(i,1);c.mailingGroups=g;return on?i<0:i>=0}
+function mgChips(g){if(!g.length)return'<span class="mg-empty">-</span>';var show=g.length<=2?g:g.slice(0,1);
+  return show.map(function(n){return'<span class="mg-chip">'+esc(n)+'</span>'}).join('')+(g.length>show.length?'<span class="mg-chip more">+'+(g.length-show.length)+'</span>':'')}
+function mgMembers(name){return db.contacts.filter(function(c){return mgOf(c).indexOf(name)>=0})}
+function isOn(id){return document.getElementById(id).classList.contains('on')}
+function refreshMgViews(){renderStats();updateFilterOptions();render();
+  if(isOn('mgOv'))renderMgMgr();if(isOn('mgDetOv'))renderMgDet();if(isOn('detOv'))renderDetGroups();
+  var p=document.getElementById('mgPop');if(p.classList.contains('on')){if(_pop.mode==='row')p.innerHTML=rowPopHtml(_pop.id);else closePop()}}
+// Save through the normal GitHub path; if it fails (e.g. a teammate saved first), reload the latest data instead of overwriting it
+var _mgReloading=false;
+async function saveGroups(m){try{var r=await saveData(m);if(r&&r.content)return true}catch(e){}
+  if(!_mgReloading){_mgReloading=true;toast('저장 실패 – 최신 데이터를 다시 불러옵니다. 다시 시도해 주세요.','er',5000);closePop();
+    try{await loadData()}finally{_mgReloading=false}if(isOn('mgOv'))renderMgMgr();if(isOn('mgDetOv'))renderMgDet();if(isOn('detOv')){renderDetInfo();renderDetGroups()}}
+  return false}
+
+// Popover (row group picker / bulk add-remove)
+var _pop={mode:null,id:null};
+function closePop(){document.getElementById('mgPop').classList.remove('on');_pop={mode:null,id:null}}
+function showPop(anchor,html){var p=document.getElementById('mgPop');p.innerHTML=html;p.classList.add('on');
+  var r=anchor.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,vw=document.documentElement.clientWidth;
+  p.style.left=(window.scrollX+Math.max(8,Math.min(r.left,vw-w-8)))+'px';
+  var below=r.bottom+4+h<=window.innerHeight||r.top-4-h<0;p.style.top=(window.scrollY+(below?r.bottom+4:r.top-4-h))+'px'}
+function rowPopHtml(id){var c=db.contacts.find(function(x){return x.id===id});if(!c)return'';
+  if(!db.mailingGroups.length)return'<div class="pop-empty">메일링 그룹이 없습니다.<br>우상단 [메일링 그룹]에서 만들어 주세요.</div>';
+  var g=mgOf(c);return'<div class="pop-title">메일링 그룹 · '+esc(c.name)+'</div>'+db.mailingGroups.map(function(name,i){
+    return'<label class="pop-item"><input type="checkbox"'+(g.indexOf(name)>=0?' checked':'')+' onchange="toggleContactGroup(\''+id+'\','+i+',this.checked)">'+esc(name)+'</label>'}).join('')}
+function openRowPop(e,id){e.stopPropagation();if(_pop.mode==='row'&&_pop.id===id){closePop();return}
+  _pop={mode:'row',id:id};showPop(e.currentTarget,rowPopHtml(id))}
+async function toggleContactGroup(id,gi,on){var c=db.contacts.find(function(x){return x.id===id}),name=db.mailingGroups[gi];if(!c||name==null)return;
+  if(!setGroup(c,name,on))return;refreshMgViews();
+  await saveGroups('Mailing group: '+(on?'+':'-')+name+' (1)')}
+function bulkPopHtml(mode){var ids=Object.keys(selected),n=ids.length;
+  if(!db.mailingGroups.length)return'<div class="pop-empty">메일링 그룹이 없습니다.<br>우상단 [메일링 그룹]에서 만들어 주세요.</div>';
+  return'<div class="pop-title">선택한 '+n+'명을 '+(mode==='add'?'그룹에 추가':'그룹에서 제외')+'</div>'+db.mailingGroups.map(function(name,i){
+    var inG=ids.filter(function(id){var c=db.contacts.find(function(x){return x.id===id});return mgOf(c).indexOf(name)>=0}).length;
+    return'<button class="pop-item" onclick="applyBulk(\''+mode+'\','+i+')">'+esc(name)+'<span class="pop-cnt">'+(mode==='add'?'이미 '+inG+'명':inG+'명 포함')+'</span></button>'}).join('')}
+function openBulkPop(e,mode){e.stopPropagation();if(_pop.mode===mode){closePop();return}_pop={mode:mode,id:null};showPop(e.currentTarget,bulkPopHtml(mode))}
+async function applyBulk(mode,gi){var name=db.mailingGroups[gi];closePop();if(name==null)return;var add=mode==='add',changed=0;
+  db.contacts.forEach(function(c){if(selected[c.id]&&setGroup(c,name,add))changed++});
+  if(!changed){toast(add?'선택한 연락처가 모두 이미 \''+name+'\'에 포함되어 있습니다':'선택한 연락처 중 \''+name+'\'에 속한 사람이 없습니다','ok');return}
+  refreshMgViews();
+  if(await saveGroups('Mailing group: '+(add?'+':'-')+name+' ('+changed+')'))toast(changed+'명을 \''+name+'\' '+(add?'그룹에 추가했습니다':'그룹에서 제외했습니다'),'ok')}
+document.addEventListener('mousedown',function(e){var p=document.getElementById('mgPop');
+  if(p.classList.contains('on')&&!p.contains(e.target)&&!e.target.closest('.td-mg,[data-pop]'))closePop()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closePop()});
+window.addEventListener('resize',closePop);
+
+// Email copy: skips empty/invalid addresses, de-duplicates (case-insensitive), joins with "; " for Outlook/Gmail
+function collectEmails(list){var seen={},emails=[],noEmail=0,invalid=0,dup=0,re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  list.forEach(function(c){var raw=(c.email||'').trim();if(!raw){noEmail++;return}
+    var parts=raw.split(/[\s;,]+/).filter(function(p){return re.test(p)});if(!parts.length){invalid++;return}
+    parts.forEach(function(p){var k=p.toLowerCase();if(seen[k]){dup++;return}seen[k]=1;emails.push(p)})});
+  return{emails:emails,noEmail:noEmail,invalid:invalid,dup:dup}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){
+  var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
+  var ok=false;try{ok=document.execCommand('copy')}catch(er){}document.body.removeChild(ta);return ok}}
+async function copyEmails(list){if(!list.length){toast('복사할 연락처가 없습니다','er');return}
+  var r=collectEmails(list);if(!r.emails.length){toast('복사할 이메일이 없습니다','er');return}
+  if(!await copyText(r.emails.join('; '))){toast('복사 실패 – 브라우저 권한을 확인해 주세요','er');return}
+  var msg='이메일 '+r.emails.length+'개를 복사했습니다.';
+  if(r.noEmail)msg+=' 이메일이 없는 연락처 '+r.noEmail+'명은 제외했습니다.';
+  if(r.invalid)msg+=' 형식이 올바르지 않은 이메일 '+r.invalid+'명은 제외했습니다.';
+  if(r.dup)msg+=' 중복 이메일 '+r.dup+'개는 한 번만 넣었습니다.';
+  toast(msg,'ok',5000)}
+function copySelectedEmails(){copyEmails(db.contacts.filter(function(c){return selected[c.id]}))}
+
+// Group management modal
+function openMgMgr(){cancelNewGroup();renderMgMgr();document.getElementById('mgOv').classList.add('on')}
+function closeMgMgr(){document.getElementById('mgOv').classList.remove('on')}
+function renderMgMgr(){var el=document.getElementById('mgList');
+  if(!db.mailingGroups.length){el.innerHTML='<div class="det-empty">메일링 그룹이 없습니다</div>';return}
+  el.innerHTML=db.mailingGroups.map(function(g,i){var cnt=mgMembers(g).length;
+    return'<div class="cat-item" style="cursor:pointer" onclick="openMgDet('+i+')"><div class="cat-name" id="mgn'+i+'">'+esc(g)+'</div><div class="cat-cnt">'+cnt+'명</div>'
+      +'<div class="cat-actions"><button class="cat-btn" onclick="event.stopPropagation();editMgName('+i+')" title="이름 변경"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>'
+      +'<button class="cat-btn cdel" onclick="event.stopPropagation();delMg('+i+')" title="삭제">&times;</button></div></div>'}).join('')}
+function startNewGroup(){document.getElementById('mgNewWrap').style.display='flex';document.getElementById('mgNewBtn').style.display='none';
+  var inp=document.getElementById('mgNewName');inp.value='';inp.focus()}
+function cancelNewGroup(){document.getElementById('mgNewWrap').style.display='none';document.getElementById('mgNewBtn').style.display=''}
+function mgNameError(v,except){if(!v)return'그룹 이름을 입력하세요';if(v==='__none__')return'사용할 수 없는 이름입니다';
+  if(db.mailingGroups.some(function(g,i){return i!==except&&g===v}))return'이미 있는 그룹 이름입니다';return''}
+async function createGroup(){var v=document.getElementById('mgNewName').value.trim(),err=mgNameError(v,-1);if(err){toast(err,'er');return}
+  db.mailingGroups.push(v);cancelNewGroup();refreshMgViews();
+  if(await saveGroups('Add mailing group: '+v))toast('\''+v+'\' 그룹을 만들었습니다','ok')}
+function editMgName(i){var el=document.getElementById('mgn'+i),old=db.mailingGroups[i];
+  el.innerHTML='<input type="text" value="'+escA(old)+'" style="width:100%;padding:5px 8px;border:1.5px solid var(--p);border-radius:6px;font-size:14px;outline:none" onclick="event.stopPropagation()" onkeydown="if(event.key===\'Enter\')this.blur();if(event.key===\'Escape\'){this.dataset.cancel=1;this.blur()}" onblur="saveMgName('+i+',this.dataset.cancel?null:this.value)">';
+  var inp=el.querySelector('input');inp.focus();inp.select()}
+async function saveMgName(i,nv){var old=db.mailingGroups[i];nv=(nv==null?old:nv).trim();
+  if(old==null||nv===old){renderMgMgr();return}
+  var err=mgNameError(nv,i);if(err){toast(err,'er');renderMgMgr();return}
+  db.mailingGroups[i]=nv;
+  db.contacts.forEach(function(c){var g=mgOf(c),k=g.indexOf(old);if(k<0)return;g=g.slice();g.splice(k,1);if(g.indexOf(nv)<0)g.splice(k,0,nv);c.mailingGroups=g});
+  var fm=document.getElementById('fltMail'),was=fm.value===old;updateFilterOptions();if(was){fm.value=nv}refreshMgViews();
+  if(await saveGroups('Rename mailing group: '+old+' → '+nv))toast(old+' → '+nv,'ok')}
+async function delMg(i){var name=db.mailingGroups[i];if(name==null)return;
+  if(!confirm('\''+name+'\' 그룹을 삭제하시겠습니까?\n해당 그룹에 포함된 연락처 자체는 삭제되지 않으며 그룹 지정만 해제됩니다.'))return;
+  db.mailingGroups.splice(i,1);db.contacts.forEach(function(c){setGroup(c,name,false)});
+  if(mgdIdx===i)closeMgDet();else if(mgdIdx>i)mgdIdx--;
+  refreshMgViews();
+  if(await saveGroups('Delete mailing group: '+name))toast('\''+name+'\' 그룹을 삭제했습니다 (연락처는 유지)','ok')}
+
+// Group detail modal
+var mgdIdx=-1;
+function openMgDet(i){mgdIdx=i;document.getElementById('mgdQ').value='';closeMgMgr();renderMgDet();document.getElementById('mgDetOv').classList.add('on')}
+function closeMgDet(){document.getElementById('mgDetOv').classList.remove('on');mgdIdx=-1}
+function backToMgMgr(){closeMgDet();openMgMgr()}
+function renderMgDet(){var name=db.mailingGroups[mgdIdx];if(name==null){closeMgDet();return}
+  var all=mgMembers(name),withEmail=all.filter(function(c){return(c.email||'').trim()}).length;
+  document.getElementById('mgdTitle').textContent=name;
+  document.getElementById('mgdSum').innerHTML='총 <b>'+all.length+'명</b> / 이메일 보유 <b>'+withEmail+'명</b>';
+  var q=(document.getElementById('mgdQ').value||'').toLowerCase();
+  var list=q?all.filter(function(c){return[c.company,c.name,c.email,c.team,c.title,c.category].some(function(v){return(v||'').toLowerCase().indexOf(q)>=0})}):all;
+  document.getElementById('mgdBody').innerHTML=list.length?list.map(function(c){
+    return'<tr><td>'+badgeHtml(c.category)+'</td><td><b>'+esc(c.company)+'</b></td><td>'+esc(c.name)+'</td><td>'+esc(c.title)+'</td><td>'+esc(c.team)+'</td>'
+      +'<td class="mono">'+(c.email?esc(c.email):'<span style="color:var(--g400)">없음</span>')+'</td>'
+      +'<td style="text-align:right"><button class="btn-edit" onclick="mgdRemove(\''+c.id+'\')">제외</button></td></tr>'}).join('')
+    :'<tr><td colspan="7"><div class="det-empty">'+(q?'검색 결과가 없습니다':'이 그룹에 포함된 연락처가 없습니다')+'</div></td></tr>'}
+async function mgdRemove(id){var name=db.mailingGroups[mgdIdx],c=db.contacts.find(function(x){return x.id===id});if(name==null||!c)return;
+  if(!setGroup(c,name,false))return;refreshMgViews();
+  if(await saveGroups('Mailing group: -'+name+' (1)'))toast(c.name+' 님을 \''+name+'\'에서 제외했습니다','ok')}
+function mgdCopy(){var name=db.mailingGroups[mgdIdx];if(name!=null)copyEmails(mgMembers(name))}
+function mgdExport(){var name=db.mailingGroups[mgdIdx];if(name!=null)exportContacts(mgMembers(name))}
 
 // === Excel Import ===
 var xlWorkbook=null,xlRows=[],xlHeaders=[];
@@ -781,7 +986,7 @@ async function submitXL(){var m=getXLMapping();var cat=document.getElementById('
   if(!items.length){toast('가져올 데이터가 없습니다','er');return}
   var btn=document.getElementById('xlSubBtn');btn.disabled=true;btn.textContent='가져오는 중...';
   items.forEach(function(o){db.contacts.push({id:'c'+Date.now()+Math.random().toString(36).slice(2,6),category:cat,
-    company:o.company,name:o.name,title:o.title||'',team:o.team||'',phone:o.phone||'',email:o.email||'',note:o.note||'',meetings:[],coupons:[]})});
+    company:o.company,name:o.name,title:o.title||'',team:o.team||'',phone:o.phone||'',email:o.email||'',note:o.note||'',meetings:[],coupons:[],mailingGroups:[]})});
   try{var r=await saveData('Excel import '+items.length);
     if(r.content){toast(items.length+'명 가져오기 완료','ok');closeXL();renderStats();updateFilterOptions();render()}
     else{for(var i=0;i<items.length;i++)db.contacts.pop();toast('저장 실패','er');btn.disabled=false;btn.textContent='가져오기'}}
